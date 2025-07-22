@@ -19,6 +19,7 @@ MouseArea {
     property bool dashboardShortcutActive
     property bool osdShortcutActive
     property bool utilitiesShortcutActive
+    property bool sessionBtnPressed
 
     function withinPanelHeight(panel: Item, x: real, y: real): bool {
         const panelY = Config.border.thickness + panel.y;
@@ -60,6 +61,9 @@ MouseArea {
             if (!utilitiesShortcutActive)
                 visibilities.utilities = false;
 
+            if (!sessionBtnPressed)
+                visibilities.session = false;
+
             popouts.hasCurrent = false;
 
             if (Config.bar.showOnHover)
@@ -85,7 +89,7 @@ MouseArea {
         }
 
         // Show osd on hover
-        const showOsd = inRightPanel(panels.osd, x, y);
+        const showOsd = false; //inRightPanel(panels.osd, x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!osdShortcutActive) {
@@ -97,14 +101,16 @@ MouseArea {
             osdHovered = true;
         }
 
-        // Show/hide session on drag
-        if (pressed && inRightPanel(panels.session, dragStart.x, dragStart.y) && withinPanelHeight(panels.session, x, y)) {
+        // Show/hide session on hover
+        visibilities.session = sessionBtnPressed || inRightPanel(panels.session, x, y);
+
+        /*if (pressed && inRightPanel(panels.session, dragStart.x, dragStart.y) && withinPanelHeight(panels.session, x, y)) {
             const dragX = x - dragStart.x;
             if (dragX < -Config.session.dragThreshold)
                 visibilities.session = true;
             else if (dragX > Config.session.dragThreshold)
                 visibilities.session = false;
-        }
+        }*/
 
         // Show/hide launcher on drag
         if (pressed && inBottomPanel(panels.launcher, dragStart.x, dragStart.y) && withinPanelWidth(panels.launcher, x, y)) {
@@ -211,6 +217,17 @@ MouseArea {
             } else {
                 // Utilities hidden, clear shortcut flag
                 root.utilitiesShortcutActive = false;
+            }
+        }
+
+        function onSessionChanged() {
+            if (root.visibilities.session) {
+                const inSessionArea = root.inRightPanel(root.panels.session, root.mouseX, root.mouseY)
+                if (!inSessionArea) {
+                    root.sessionBtnPressed = true;
+                }
+            } else {
+                root.sessionBtnPressed = false;
             }
         }
     }
