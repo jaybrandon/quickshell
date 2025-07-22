@@ -103,11 +103,13 @@ Item {
 
         background: null
 
+        padding: 0
+
         contentItem: CustomMouseArea {
             id: mouse
 
             implicitWidth: Math.max(icon.width, label.width)
-            implicitHeight: icon.height + label.height
+            implicitHeight: icon.height + label.height + 5
 
             cursorShape: Qt.PointingHandCursor
 
