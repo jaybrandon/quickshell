@@ -25,7 +25,7 @@ Shape {
     Osd.Background {
         wrapper: panels.osd
 
-        startX: root.width - panels.session.width
+        startX: root.width - panels.session.width + 1
         startY: (root.height - wrapper.height) / 2 - rounding
     }
 
@@ -39,7 +39,7 @@ Shape {
     Session.Background {
         wrapper: panels.session
 
-        startX: root.width
+        startX: root.width + 1
         startY: (root.height - wrapper.height) / 2 - rounding
     }
 
@@ -47,14 +47,14 @@ Shape {
         wrapper: panels.launcher
 
         startX: (root.width - wrapper.width) / 2 - rounding
-        startY: root.height
+        startY: root.height + 1
     }
 
     Dashboard.Background {
         wrapper: panels.dashboard
 
         startX: (root.width - wrapper.width) / 2 - rounding
-        startY: 0
+        startY: -1
     }
 
     BarPopouts.Background {
