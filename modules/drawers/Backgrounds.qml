@@ -32,8 +32,8 @@ Shape {
     Notifications.Background {
         wrapper: panels.notifications
 
-        startX: root.width
-        startY: 0
+        startX: root.width + 1
+        startY: -1
     }
 
     Session.Background {
