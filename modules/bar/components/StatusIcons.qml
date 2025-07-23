@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Services.UPower
 import QtQuick
+import Quickshell.Io
 
 Item {
     id: root
@@ -66,6 +67,29 @@ Item {
         anchors.horizontalCenter: audio.horizontalCenter
         anchors.top: audio.bottom
         anchors.topMargin: Appearance.spacing.smaller / 2
+
+        StateLayer {
+            anchors.fill: undefined
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: 1
+
+            implicitWidth: parent.implicitHeight + Appearance.padding.small * 2
+            implicitHeight: implicitWidth
+
+            radius: Appearance.rounding.full
+
+            hoverEnabled: false
+
+            function onClicked(): void {
+                launchNet.running = true
+            }
+
+            Process {
+                id: launchNet
+                running: false
+                command: ["app2unit", "--", "/home/jayh/.config/rofi/applets/wifimenu", "--rofi", "-s"]
+            }
+        }
     }
 
     MaterialIcon {
@@ -78,6 +102,29 @@ Item {
         animate: true
         text: Bluetooth.defaultAdapter.enabled ? "bluetooth" : "bluetooth_disabled"
         color: root.colour
+
+        StateLayer {
+            anchors.fill: undefined
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: 1
+
+            implicitWidth: parent.implicitHeight + Appearance.padding.small * 2
+            implicitHeight: implicitWidth
+
+            radius: Appearance.rounding.full
+
+            hoverEnabled: false
+
+            function onClicked(): void {
+                launchBT.running = true
+            }
+
+            Process {
+                id: launchBT
+                running: false
+                command: ["app2unit", "--", "blueman-manager"]
+            }
+        }
     }
 
     Column {
