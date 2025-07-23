@@ -23,6 +23,9 @@ Item {
         const th = tray.implicitHeight;
         const trayItems = tray.items;
 
+        const a = statusIconsInner.audio;
+        const ay = statusIcons.y + statusIconsInner.y + a.y - spacing / 2;
+
         const n = statusIconsInner.network;
         const ny = statusIcons.y + statusIconsInner.y + n.y - spacing / 2;
 
@@ -42,6 +45,10 @@ Item {
 
             popouts.currentName = `traymenu${index}`;
             popouts.currentCenter = Qt.binding(() => tray.y + item.y + item.implicitHeight / 2);
+            popouts.hasCurrent = true;
+        } else if (y >= ay && y <= ay + a.implicitHeight + spacing) {
+            popouts.currentName = "audio";
+            popouts.currentCenter = Qt.binding(() => statusIcons.y + statusIconsInner.y + a.y + a.implicitHeight / 2);
             popouts.hasCurrent = true;
         } else if (y >= ny && y <= ny + n.implicitHeight + spacing) {
             popouts.currentName = "network";

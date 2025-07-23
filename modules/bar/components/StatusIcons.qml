@@ -16,10 +16,45 @@ Item {
     readonly property real bs: bluetooth.y
     readonly property real be: repeater.count > 0 ? devices.y + devices.implicitHeight : bluetooth.y + bluetooth.implicitHeight
     readonly property Item battery: battery
+    readonly property Item audio: audio
 
-    clip: true
-    implicitWidth: Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth, battery.implicitWidth)
-    implicitHeight: network.implicitHeight + bluetooth.implicitHeight + bluetooth.anchors.topMargin + (repeater.count > 0 ? devices.implicitHeight + devices.anchors.topMargin : 0) + battery.implicitHeight + battery.anchors.topMargin
+    clip: false
+    implicitWidth: Math.max(network.implicitWidth, bluetooth.implicitWidth, devices.implicitWidth, battery.implicitWidth, audio.implicitWidth)
+    implicitHeight: audio.implicitHeight + network.implicitHeight + bluetooth.implicitHeight + bluetooth.anchors.topMargin + (repeater.count > 0 ? devices.implicitHeight + devices.anchors.topMargin : 0) + battery.implicitHeight + battery.anchors.topMargin
+
+    MaterialIcon {
+        id: audio
+        animate: true
+        text: {
+            if (Audio.muted)
+                return "no_sound";
+            if (Audio.volume >= 0.5)
+                return "volume_up";
+            if (Audio.volume > 0)
+                return "volume_down";
+            return "volume_mute";
+        }
+        color: root.colour
+
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        StateLayer {
+            anchors.fill: undefined
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: 1
+
+            implicitWidth: parent.implicitHeight + Appearance.padding.small * 2
+            implicitHeight: implicitWidth
+
+            radius: Appearance.rounding.full
+
+            hoverEnabled: false
+
+            function onClicked(): void {
+                Audio.toggleMute();
+            }
+        }
+    }
 
     MaterialIcon {
         id: network
@@ -28,7 +63,9 @@ Item {
         text: Network.active ? Icons.getNetworkIcon(Network.active.strength ?? 0) : "wifi_off"
         color: root.colour
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: audio.horizontalCenter
+        anchors.top: audio.bottom
+        anchors.topMargin: Appearance.spacing.smaller / 2
     }
 
     MaterialIcon {
