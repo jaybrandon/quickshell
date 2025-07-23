@@ -10,6 +10,7 @@ Singleton {
 
     readonly property bool muted: source?.audio?.muted ?? false
     readonly property real volume: source?.audio?.volume ?? 0
+    readonly property string device: source?.description ?? "unknown"
 
     function setVolume(volume: real): void {
         if (source?.ready && source?.audio) {
