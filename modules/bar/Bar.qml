@@ -26,6 +26,9 @@ Item {
         const a = statusIconsInner.audio;
         const ay = statusIcons.y + statusIconsInner.y + a.y - spacing / 2;
 
+        const m = statusIconsInner.microphone;
+        const my = statusIcons.y + statusIconsInner.y + m.y - spacing / 2;
+
         const n = statusIconsInner.network;
         const ny = statusIcons.y + statusIconsInner.y + n.y - spacing / 2;
 
@@ -49,6 +52,10 @@ Item {
         } else if (y >= ay && y <= ay + a.implicitHeight + spacing) {
             popouts.currentName = "audio";
             popouts.currentCenter = Qt.binding(() => statusIcons.y + statusIconsInner.y + a.y + a.implicitHeight / 2);
+            popouts.hasCurrent = true;
+        } else if (y >= my && y <= my + m.implicitHeight + spacing) {
+            popouts.currentName = "microphone";
+            popouts.currentCenter = Qt.binding(() => statusIcons.y + statusIconsInner.y + m.y + m.implicitHeight / 2);
             popouts.hasCurrent = true;
         } else if (y >= ny && y <= ny + n.implicitHeight + spacing) {
             popouts.currentName = "network";

@@ -39,6 +39,11 @@ Item {
         }
 
         Popout {
+            name: "microphone"
+            source: "Microphone.qml"
+        }
+
+        Popout {
             name: "network"
             source: "Network.qml"
         }
