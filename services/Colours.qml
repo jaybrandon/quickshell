@@ -51,6 +51,10 @@ Singleton {
             if (colours.hasOwnProperty(propName))
                 colours[propName] = `#${colour}`;
         }
+        
+        if (!isPreview) {
+            root.showPreview = false;
+        }
     }
 
     function setMode(mode: string): void {
