@@ -118,13 +118,7 @@ Item {
             hoverEnabled: false
 
             function onClicked(): void {
-                launchNet.running = true
-            }
-
-            Process {
-                id: launchNet
-                running: false
-                command: ["app2unit", "--", "/home/jayh/.config/rofi/applets/wifimenu", "--rofi", "-s"]
+                Quickshell.execDetached(["app2unit", "--", "/home/jayh/.config/rofi/applets/wifimenu", "--rofi", "-s"]);
             }
         }
     }
@@ -153,13 +147,7 @@ Item {
             hoverEnabled: false
 
             function onClicked(): void {
-                launchBT.running = true
-            }
-
-            Process {
-                id: launchBT
-                running: false
-                command: ["app2unit", "--", "blueman-manager"]
+                Quickshell.execDetached(["app2unit", "--", "blueman-manager"]);
             }
         }
     }
