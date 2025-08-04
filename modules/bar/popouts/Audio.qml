@@ -1,18 +1,19 @@
-import qs.widgets
+import qs.components
+import qs.components.controls
 import qs.services
 import qs.config
-import QtQuick
+import QtQuick.Layouts
+import Quickshell
 
-Item {
+ColumnLayout {
+    id: root
 
-    implicitWidth: slider.implicitWidth + rotatedText.width + Appearance.spacing.smaller
-    implicitHeight: slider.implicitHeight
+    required property var wrapper
+
+    spacing: Appearance.spacing.normal
 
     VerticalSlider {
-        id: slider
-
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        id: volumeSlider
 
         icon: {
             if (Audio.muted)
@@ -23,40 +24,35 @@ Item {
                 return "volume_down";
             return "volume_mute";
         }
+
         value: Audio.volume
         onMoved: Audio.setVolume(value)
 
         implicitWidth: Config.osd.sizes.sliderWidth
         implicitHeight: Config.osd.sizes.sliderHeight
-}
+    }
 
-    Item {
-        id: rotatedText
-        implicitWidth: device.implicitHeight
-        implicitHeight: slider.implicitHeight
+    StyledRect {
+        id: pavuButton
 
-        anchors.left: slider.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Appearance.spacing.smaller
+        implicitWidth: implicitHeight
+        implicitHeight: icon.implicitHeight + Appearance.padding.small * 2
 
-        StyledText {
-            id: device
-            text: qsTr(Audio.device)
-            elide: Text.ElideMiddle
-            wrapMode: Text.NoWrap
-            maximumLineCount: 2
-            horizontalAlignment: Text.AlignHCenter
+        radius: Appearance.rounding.normal
+        color: Colours.palette.m3surfaceContainer
 
-            width: parent.height
+        StateLayer {
+            function onClicked(): void {
+                root.wrapper.hasCurrent = false;
+                Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.audio]);
+            }
+        }
+
+        MaterialIcon {
+            id: icon
 
             anchors.centerIn: parent
-
-            transform: Rotation {
-                origin.x: device.width / 2
-                origin.y: device.height / 2
-                angle: 90
-            }
+            text: "settings"
         }
     }
 }
-

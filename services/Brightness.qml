@@ -1,7 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 
-import qs.widgets
+import qs.components.misc
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -86,6 +86,7 @@ Singleton {
         readonly property string busNum: root.ddcMonitors.find(m => m.model === modelData.model)?.busNum ?? ""
         readonly property bool isAppleDisplay: root.appleDisplayPresent && modelData.model.startsWith("StudioDisplay")
         property real brightness
+        property real queuedBrightness: NaN
 
         readonly property Process initProc: Process {
             stdout: StdioCollector {
@@ -101,11 +102,27 @@ Singleton {
             }
         }
 
+        readonly property Timer timer: Timer {
+            interval: 500
+            onTriggered: {
+                if (!isNaN(monitor.queuedBrightness)) {
+                    monitor.setBrightness(monitor.queuedBrightness);
+                    monitor.queuedBrightness = NaN;
+                }
+            }
+        }
+
         function setBrightness(value: real): void {
             value = Math.max(0, Math.min(1, value));
             const rounded = Math.round(value * 100);
             if (Math.round(brightness * 100) === rounded)
                 return;
+
+            if (isDdc && timer.running) {
+                queuedBrightness = value;
+                return;
+            }
+
             brightness = value;
 
             if (isAppleDisplay)
@@ -114,6 +131,9 @@ Singleton {
                 Quickshell.execDetached(["ddcutil", "-b", busNum, "setvcp", "10", rounded]);
             else
                 Quickshell.execDetached(["brightnessctl", "s", `${rounded}%`]);
+
+            if (isDdc)
+                timer.restart();
         }
 
         function initBrightness(): void {

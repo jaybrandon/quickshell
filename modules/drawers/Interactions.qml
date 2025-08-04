@@ -64,7 +64,8 @@ MouseArea {
             if (!sessionBtnPressed)
                 visibilities.session = false;
 
-            popouts.hasCurrent = false;
+            if (!popouts.currentName.startsWith("traymenu"))
+                popouts.hasCurrent = false;
 
             if (Config.bar.showOnHover)
                 bar.isHovered = false;
@@ -72,6 +73,9 @@ MouseArea {
     }
 
     onPositionChanged: event => {
+        if (popouts.isDetached)
+            return;
+
         const x = event.x;
         const y = event.y;
 
@@ -132,6 +136,15 @@ MouseArea {
             dashboardShortcutActive = false;
         }
 
+        // Show/hide dashboard on drag (for touchscreen devices)
+        if (pressed && inTopPanel(panels.dashboard, dragStart.x, dragStart.y) && withinPanelWidth(panels.dashboard, x, y)) {
+            const dragY = y - dragStart.y;
+            if (dragY > Config.dashboard.dragThreshold)
+                visibilities.dashboard = true;
+            else if (dragY < -Config.dashboard.dragThreshold)
+                visibilities.dashboard = false;
+        }
+
         // Show utilities on hover
         const showUtilities = inBottomPanel(panels.utilities, x, y);
 
@@ -144,16 +157,8 @@ MouseArea {
         }
 
         // Show popouts on hover
-        const popout = panels.popouts;
-        if (x < bar.implicitWidth + popout.width) {
-            if (x < bar.implicitWidth)
-                // Handle like part of bar
-                bar.checkPopout(y);
-            else
-                // Keep on hover
-                popouts.hasCurrent = withinPanelHeight(popout, x, y);
-        } else
-            popouts.hasCurrent = false;
+        if (x < bar.implicitWidth)
+            bar.checkPopout(y);
     }
 
     // Monitor individual visibility changes

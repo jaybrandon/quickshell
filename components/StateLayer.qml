@@ -1,4 +1,3 @@
-import qs.widgets
 import qs.services
 import qs.config
 import QtQuick
@@ -15,6 +14,7 @@ MouseArea {
 
     anchors.fill: parent
 
+    enabled: !disabled
     cursorShape: disabled ? undefined : Qt.PointingHandCursor
     hoverEnabled: true
 

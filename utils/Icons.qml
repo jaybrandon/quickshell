@@ -103,10 +103,6 @@ Singleton {
             "395": "snowing"
         })
 
-    readonly property var desktopEntrySubs: ({
-            "gimp-3.0": "gimp"
-        })
-
     readonly property var categoryIcons: ({
             WebBrowser: "web",
             Printing: "print",
@@ -150,21 +146,15 @@ Singleton {
     property string osIcon: ""
     property string osName
 
-    function getDesktopEntry(name: string): DesktopEntry {
-        name = name.toLowerCase().replace(/ /g, "-");
-
-        if (desktopEntrySubs.hasOwnProperty(name))
-            name = desktopEntrySubs[name];
-
-        return DesktopEntries.applications.values.find(a => a.id.toLowerCase() === name) ?? null;
-    }
-
     function getAppIcon(name: string, fallback: string): string {
-        return Quickshell.iconPath(getDesktopEntry(name)?.icon, fallback);
+        const icon = DesktopEntries.heuristicLookup(name)?.icon;
+        if (fallback !== "undefined")
+            return Quickshell.iconPath(icon, fallback);
+        return Quickshell.iconPath(icon);
     }
 
     function getAppCategoryIcon(name: string, fallback: string): string {
-        const categories = getDesktopEntry(name)?.categories;
+        const categories = DesktopEntries.heuristicLookup(name)?.categories;
 
         if (categories)
             for (const [key, value] of Object.entries(categoryIcons))

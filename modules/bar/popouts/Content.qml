@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 
-import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Services.SystemTray
@@ -10,10 +9,6 @@ Item {
     id: root
 
     required property Item wrapper
-    required property ShellScreen screen
-    required property string currentName
-    required property real currentCenter
-    required property bool hasCurrent
 
     anchors.centerIn: parent
 
@@ -45,17 +40,26 @@ Item {
 
         Popout {
             name: "network"
-            source: "Network.qml"
+            sourceComponent: Network {}
         }
 
         Popout {
             name: "bluetooth"
-            source: "Bluetooth.qml"
+            sourceComponent: Bluetooth {
+                wrapper: root.wrapper
+            }
         }
 
         Popout {
             name: "battery"
             source: "Battery.qml"
+        }
+
+        Popout {
+            name: "audio"
+            sourceComponent: Audio {
+                wrapper: root.wrapper
+            }
         }
 
         Repeater {
@@ -73,10 +77,10 @@ Item {
                 sourceComponent: trayMenuComp
 
                 Connections {
-                    target: root
+                    target: root.wrapper
 
                     function onHasCurrentChanged(): void {
-                        if (root.hasCurrent && trayMenu.shouldBeActive) {
+                        if (root.wrapper.hasCurrent && trayMenu.shouldBeActive) {
                             trayMenu.sourceComponent = null;
                             trayMenu.sourceComponent = trayMenuComp;
                         }
@@ -87,7 +91,7 @@ Item {
                     id: trayMenuComp
 
                     TrayMenu {
-                        popouts: root
+                        popouts: root.wrapper
                         trayItem: trayMenu.modelData.menu
                     }
                 }
@@ -99,7 +103,7 @@ Item {
         id: popout
 
         required property string name
-        property bool shouldBeActive: root.currentName === name
+        property bool shouldBeActive: root.wrapper.currentName === name
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right

@@ -1,12 +1,14 @@
 import qs.config
 import QtQuick
-import QtQuick.Effects
 
-MultiEffect {
-    colorization: 1
+Flickable {
+    id: root
 
-    Behavior on colorizationColor {
-        ColorAnimation {
+    maximumFlickVelocity: 3000
+
+    rebound: Transition {
+        NumberAnimation {
+            properties: "x,y"
             duration: Appearance.anim.durations.normal
             easing.type: Easing.BezierSpline
             easing.bezierCurve: Appearance.anim.curves.standard
