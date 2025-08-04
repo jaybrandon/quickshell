@@ -29,13 +29,10 @@ Item {
         }
 
         Popout {
-            name: "audio"
-            source: "Audio.qml"
-        }
-
-        Popout {
             name: "microphone"
-            source: "Microphone.qml"
+            sourceComponent: Microphone {
+                wrapper: root.wrapper
+            }
         }
 
         Popout {

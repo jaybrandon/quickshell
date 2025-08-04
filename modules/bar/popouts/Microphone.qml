@@ -1,18 +1,22 @@
-import qs.widgets
+import qs.components
+import qs.components.controls
 import qs.services
 import qs.config
 import QtQuick
+import Quickshell
 
 Item {
+    id: root
 
-    implicitWidth: slider.implicitWidth + rotatedText.width + Appearance.spacing.smaller
-    implicitHeight: slider.implicitHeight
+    required property var wrapper
+
+    implicitWidth: Math.max(volumeSlider.implicitWidth, pavuButton.implicitWidth) + rotatedText.width + Appearance.spacing.normal
+    implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight + Appearance.spacing.normal
 
     VerticalSlider {
-        id: slider
-        
+        id: volumeSlider
+
         anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
 
         icon: {
             if (Microphone.muted)
@@ -24,18 +28,46 @@ Item {
         value: Microphone.volume
         onMoved: Microphone.setVolume(value)
 
-        implicitWidth: Config.osd.sizes.sliderWidth
+        implicitWidth: Math.max(Config.osd.sizes.sliderWidth, pavuButton.implicitWidth)
         implicitHeight: Config.osd.sizes.sliderHeight
     }
 
+        StyledRect {
+        id: pavuButton
+
+        anchors.left: parent.left
+        anchors.top: volumeSlider.bottom
+        anchors.topMargin: Appearance.spacing.normal
+        
+        implicitWidth: implicitHeight
+        implicitHeight: icon.implicitHeight + Appearance.padding.small * 2
+
+        radius: Appearance.rounding.normal
+        color: Colours.palette.m3surfaceContainer
+
+        StateLayer {
+            function onClicked(): void {
+                root.wrapper.hasCurrent = false;
+                Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.microphone]);
+            }
+        }
+
+        MaterialIcon {
+            id: icon
+
+            anchors.centerIn: parent
+            text: "settings"
+        }
+    }
+    
     Item {
         id: rotatedText
         implicitWidth: device.implicitHeight
-        implicitHeight: slider.implicitHeight
+        implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight
 
-        anchors.left: slider.right
+        anchors.left: volumeSlider.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Appearance.spacing.smaller
+        anchors.leftMargin: Appearance.spacing.normal
 
         StyledText {
             id: device

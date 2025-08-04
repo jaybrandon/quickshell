@@ -23,6 +23,11 @@ Item {
             enabled: Config.bar.status.showAudio
         },
         {
+            name: "microphone",
+            item: micIcon,
+            enabled: Config.bar.status.showMic
+        },
+        {
             name: "network",
             item: networkIcon,
             enabled: Config.bar.status.showNetwork
@@ -39,7 +44,7 @@ Item {
         }
     ]
 
-    clip: true
+    clip: false
     implicitWidth: iconColumn.implicitWidth
     implicitHeight: iconColumn.implicitHeight
 
@@ -61,6 +66,55 @@ Item {
                 animate: true
                 text: Audio.muted ? "volume_off" : Audio.volume >= 0.66 ? "volume_up" : Audio.volume >= 0.33 ? "volume_down" : "volume_mute"
                 color: root.colour
+            }
+
+            StateLayer {
+                anchors.fill: undefined
+                anchors.centerIn: parent
+                anchors.horizontalCenterOffset: 0
+
+                implicitWidth: parent.implicitHeight + Appearance.padding.small * 2
+                implicitHeight: implicitWidth
+
+                radius: Appearance.rounding.full
+
+                hoverEnabled: false
+
+                function onClicked(): void {
+                    Audio.toggleMute();
+                }
+            }
+        }
+
+        // Microphone icon
+        Loader {
+            id: micIcon
+
+            asynchronous: true
+            active: Config.bar.status.showMic
+            visible: active
+
+            sourceComponent: MaterialIcon {
+                animate: true
+                text: Microphone.muted ? "" : Microphone.volume > 0 ? "" : ""
+                color: root.colour
+            }
+
+            StateLayer {
+                anchors.fill: undefined
+                anchors.centerIn: parent
+                anchors.horizontalCenterOffset: 0
+
+                implicitWidth: parent.implicitHeight + Appearance.padding.small * 2
+                implicitHeight: implicitWidth
+
+                radius: Appearance.rounding.full
+
+                hoverEnabled: false
+
+                function onClicked(): void {
+                    Microphone.toggleMute();
+                }
             }
         }
 

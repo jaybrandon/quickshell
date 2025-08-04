@@ -2,18 +2,21 @@ import qs.components
 import qs.components.controls
 import qs.services
 import qs.config
-import QtQuick.Layouts
+import QtQuick
 import Quickshell
 
-ColumnLayout {
+Item {
     id: root
 
     required property var wrapper
 
-    spacing: Appearance.spacing.normal
+    implicitWidth: Math.max(volumeSlider.implicitWidth, pavuButton.implicitWidth) + rotatedText.width + Appearance.spacing.normal
+    implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight + Appearance.spacing.normal
 
     VerticalSlider {
         id: volumeSlider
+
+        anchors.left: parent.left
 
         icon: {
             if (Audio.muted)
@@ -28,13 +31,17 @@ ColumnLayout {
         value: Audio.volume
         onMoved: Audio.setVolume(value)
 
-        implicitWidth: Config.osd.sizes.sliderWidth
+        implicitWidth: Math.max(Config.osd.sizes.sliderWidth, pavuButton.implicitWidth)
         implicitHeight: Config.osd.sizes.sliderHeight
     }
 
     StyledRect {
         id: pavuButton
 
+        anchors.left: parent.left
+        anchors.top: volumeSlider.bottom
+        anchors.topMargin: Appearance.spacing.normal
+        
         implicitWidth: implicitHeight
         implicitHeight: icon.implicitHeight + Appearance.padding.small * 2
 
@@ -55,4 +62,33 @@ ColumnLayout {
             text: "settings"
         }
     }
+    
+    Item {
+        id: rotatedText
+        implicitWidth: device.implicitHeight
+        implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight
+
+        anchors.left: volumeSlider.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: Appearance.spacing.normal
+
+        StyledText {
+            id: device
+            text: qsTr(Audio.device)
+            elide: Text.ElideMiddle
+            wrapMode: Text.NoWrap
+            maximumLineCount: 2
+            horizontalAlignment: Text.AlignHCenter
+
+            width: parent.height
+
+            anchors.centerIn: parent
+
+            transform: Rotation {
+                origin.x: device.width / 2
+                origin.y: device.height / 2
+                angle: 90
+            }
+        }
+    } 
 }
