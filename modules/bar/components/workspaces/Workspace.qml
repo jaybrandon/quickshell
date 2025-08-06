@@ -21,6 +21,8 @@ Item {
     readonly property bool isOccupied: occupied[ws] ?? false
     readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows
 
+    property var roman: ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+
     Layout.preferredWidth: childrenRect.width
     Layout.preferredHeight: size
 
@@ -32,10 +34,13 @@ Item {
         readonly property string activeLabel: Config.bar.workspaces.activeLabel || (root.isOccupied ? occupiedLabel : label)
 
         animate: true
-        text: Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
+        text: root.ws <= 10 ? root.roman[root.ws - 1] : root.ws//Hyprland.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label
         color: Config.bar.workspaces.occupiedBg || root.isOccupied || Hyprland.activeWsId === root.ws ? Colours.palette.m3onSurface : Colours.palette.m3outlineVariant
         horizontalAlignment: StyledText.AlignHCenter
         verticalAlignment: StyledText.AlignVCenter
+
+        font.pointSize: Appearance.font.size.normal
+        font.family: Appearance.font.family.sans
 
         width: Config.bar.sizes.innerHeight
         height: Config.bar.sizes.innerHeight
