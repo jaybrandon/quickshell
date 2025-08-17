@@ -102,20 +102,11 @@ ColumnLayout {
                 implicitHeight: connectIcon.implicitHeight + Appearance.padding.small
 
                 radius: Appearance.rounding.full
-                color: networkItem.modelData.active ? Colours.palette.m3primary : Colours.palette.m3surface
+                color: Qt.alpha(Colours.palette.m3primary, networkItem.modelData.active ? 1 : 0)
 
                 StyledBusyIndicator {
-                    anchors.centerIn: parent
-
-                    implicitWidth: implicitHeight
-                    implicitHeight: connectIcon.implicitHeight
-
-                    running: opacity > 0
-                    opacity: networkItem.loading ? 1 : 0
-
-                    Behavior on opacity {
-                        Anim {}
-                    }
+                    anchors.fill: parent
+                    running: networkItem.loading
                 }
 
                 StateLayer {
@@ -156,7 +147,7 @@ ColumnLayout {
         implicitHeight: rescanBtn.implicitHeight + Appearance.padding.small * 2
 
         radius: Appearance.rounding.normal
-        color: Network.scanning ? Colours.palette.m3surfaceContainer : Colours.palette.m3primaryContainer
+        color: Network.scanning ? Colours.tPalette.m3surfaceContainer : Colours.palette.m3primaryContainer
 
         StateLayer {
             color: Network.scanning ? Colours.palette.m3onSurface : Colours.palette.m3onPrimaryContainer

@@ -1,3 +1,4 @@
+import qs.components.controls
 import qs.services
 import qs.config
 import qs.modules.bar.popouts as BarPopouts
@@ -5,7 +6,7 @@ import qs.modules.osd as Osd
 import Quickshell
 import QtQuick
 
-MouseArea {
+CustomMouseArea {
     id: root
 
     required property ShellScreen screen
@@ -41,6 +42,12 @@ MouseArea {
 
     function inBottomPanel(panel: Item, x: real, y: real): bool {
         return y > root.height - Config.border.thickness - panel.height - Config.border.rounding && withinPanelWidth(panel, x, y);
+    }
+
+    function onWheel(event: WheelEvent): void {
+        if (event.x < bar.implicitWidth) {
+            bar.handleWheel(event.y, event.angleDelta);
+        }
     }
 
     anchors.fill: parent
@@ -126,7 +133,7 @@ MouseArea {
         }
 
         // Show dashboard on hover
-        const showDashboard = inTopPanel(panels.dashboard, x, y);
+        const showDashboard = Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y);
 
         // Always update visibility based on hover if not in shortcut mode
         if (!dashboardShortcutActive) {

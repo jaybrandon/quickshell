@@ -88,6 +88,7 @@ Variants {
 
             Item {
                 anchors.fill: parent
+                opacity: Colours.transparency.enabled ? Colours.transparency.base : 1
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     shadowEnabled: true
@@ -132,17 +133,17 @@ Variants {
                     visibilities: visibilities
                     bar: bar
                 }
-            }
 
-            BarWrapper {
-                id: bar
+                BarWrapper {
+                    id: bar
 
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
 
-                screen: scope.modelData
-                visibilities: visibilities
-                popouts: panels.popouts
+                    screen: scope.modelData
+                    visibilities: visibilities
+                    popouts: panels.popouts
+                }
             }
         }
     }

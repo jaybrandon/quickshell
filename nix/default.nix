@@ -23,6 +23,7 @@
   findutils,
   file,
   material-symbols,
+  rubik,
   nerd-fonts,
   gcc,
   quickshell,
@@ -30,6 +31,7 @@
   pipewire,
   caelestia-cli,
   withCli ? false,
+  extraRuntimeDeps ? [],
 }: let
   runtimeDeps =
     [
@@ -52,16 +54,17 @@
       findutils
       file
     ]
+    ++ extraRuntimeDeps
     ++ lib.optional withCli caelestia-cli;
 
   fontconfig = makeFontsConf {
-    fontDirectories = [material-symbols nerd-fonts.jetbrains-mono];
+    fontDirectories = [material-symbols rubik nerd-fonts.caskaydia-cove];
   };
 in
   stdenv.mkDerivation {
     pname = "caelestia-shell";
     version = "${rev}";
-    src = ./.;
+    src = ./..;
 
     nativeBuildInputs = [gcc makeWrapper];
     buildInputs = [quickshell aubio pipewire];
@@ -80,11 +83,15 @@ in
 
     installPhase = ''
       install -Dm755 bin/beat_detector $out/bin/beat_detector
+
+      mkdir -p $out/share/caelestia-shell
+      cp -r ./* $out/share/caelestia-shell
+
       makeWrapper ${quickshell}/bin/qs $out/bin/caelestia-shell \
       	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
       	--set FONTCONFIG_FILE "${fontconfig}" \
       	--set CAELESTIA_BD_PATH $out/bin/beat_detector \
-      	--add-flags '-p ${./.}'
+      	--add-flags "-p $out/share/caelestia-shell"
     '';
 
     meta = {

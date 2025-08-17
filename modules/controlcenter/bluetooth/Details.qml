@@ -64,7 +64,7 @@ Item {
                 implicitHeight: deviceStatus.implicitHeight + Appearance.padding.large * 2
 
                 radius: Appearance.rounding.normal
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
 
                 ColumnLayout {
                     id: deviceStatus
@@ -118,7 +118,7 @@ Item {
                 implicitHeight: deviceProps.implicitHeight + Appearance.padding.large * 2
 
                 radius: Appearance.rounding.normal
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
 
                 ColumnLayout {
                     id: deviceProps
@@ -265,8 +265,8 @@ Item {
                             implicitWidth: implicitHeight
                             implicitHeight: editIcon.implicitHeight + Appearance.padding.smaller * 2
 
-                            radius: root.session.bt.editingDeviceName ? Appearance.rounding.small : implicitHeight / 2
-                            color: root.session.bt.editingDeviceName ? Colours.palette.m3primary : "transparent"
+                            radius: root.session.bt.editingDeviceName ? Appearance.rounding.small : implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
+                            color: Qt.alpha(Colours.palette.m3primary, root.session.bt.editingDeviceName ? 1 : 0)
 
                             StateLayer {
                                 color: root.session.bt.editingDeviceName ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
@@ -326,7 +326,7 @@ Item {
                 implicitHeight: deviceInfo.implicitHeight + Appearance.padding.large * 2
 
                 radius: Appearance.rounding.normal
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
 
                 ColumnLayout {
                     id: deviceInfo
@@ -652,6 +652,8 @@ Item {
 
         StyledSwitch {
             id: toggle
+
+            cLayer: 2
         }
     }
 

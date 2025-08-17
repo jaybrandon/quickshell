@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "app2unit": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1754708301,
-        "narHash": "sha256-rtgEwE5YkFJnKca1pfI89oNlXNQChmDakpAfPCn0NAc=",
-        "owner": "soramanew",
-        "repo": "app2unit",
-        "rev": "dc998d8d4ff10265aa845b7eed63cca74bf7e6e3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "soramanew",
-        "repo": "app2unit",
-        "type": "github"
-      }
-    },
     "caelestia-cli": {
       "inputs": {
         "caelestia-shell": [],
@@ -79,7 +59,6 @@
     },
     "root": {
       "inputs": {
-        "app2unit": "app2unit",
         "caelestia-cli": "caelestia-cli",
         "nixpkgs": "nixpkgs",
         "quickshell": "quickshell"

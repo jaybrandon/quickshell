@@ -38,9 +38,9 @@ Item {
 
         ShapePath {
             fillColor: "transparent"
-            strokeColor: Colours.palette.m3surfaceContainerHigh
+            strokeColor: Colours.layer(Colours.palette.m3surfaceContainerHigh, 2)
             strokeWidth: Config.dashboard.sizes.mediaProgressThickness
-            capStyle: ShapePath.RoundCap
+            capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
 
             PathAngleArc {
                 centerX: cover.x + cover.width / 2
@@ -64,7 +64,7 @@ Item {
             fillColor: "transparent"
             strokeColor: Colours.palette.m3primary
             strokeWidth: Config.dashboard.sizes.mediaProgressThickness
-            capStyle: ShapePath.RoundCap
+            capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
 
             PathAngleArc {
                 centerX: cover.x + cover.width / 2
@@ -94,8 +94,8 @@ Item {
         anchors.margins: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 
         implicitHeight: width
-        color: Colours.palette.m3surfaceContainerHigh
-        radius: Appearance.rounding.full
+        color: Colours.tPalette.m3surfaceContainerHigh
+        radius: Infinity
 
         MaterialIcon {
             anchors.centerIn: parent

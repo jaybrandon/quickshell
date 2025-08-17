@@ -7,12 +7,13 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    property alias appearance: adapter.appearance
     property alias general: adapter.general
     property alias background: adapter.background
     property alias bar: adapter.bar
     property alias border: adapter.border
     property alias dashboard: adapter.dashboard
-    property alias dcontent: adapter.dcontent
+    property alias controlCenter: adapter.controlCenter
     property alias launcher: adapter.launcher
     property alias notifs: adapter.notifs
     property alias osd: adapter.osd
@@ -26,17 +27,17 @@ Singleton {
         path: `${Paths.stringify(Paths.config)}/shell.json`
         watchChanges: true
         onFileChanged: reload()
-        onAdapterUpdated: writeAdapter()
 
         JsonAdapter {
             id: adapter
 
+            property AppearanceConfig appearance: AppearanceConfig {}
             property GeneralConfig general: GeneralConfig {}
             property BackgroundConfig background: BackgroundConfig {}
             property BarConfig bar: BarConfig {}
             property BorderConfig border: BorderConfig {}
             property DashboardConfig dashboard: DashboardConfig {}
-            property DContentConfig dcontent: DContentConfig {}
+            property ControlCenterConfig controlCenter: ControlCenterConfig {}
             property LauncherConfig launcher: LauncherConfig {}
             property NotifsConfig notifs: NotifsConfig {}
             property OsdConfig osd: OsdConfig {}

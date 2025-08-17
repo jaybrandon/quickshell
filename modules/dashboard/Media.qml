@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import qs.components
 import qs.components.effects
 import qs.components.misc
+import qs.components.controls
 import qs.services
 import qs.utils
 import qs.config
@@ -92,7 +93,7 @@ Item {
             readonly property real cos: Math.cos(angle)
             readonly property real sin: Math.sin(angle)
 
-            capStyle: ShapePath.RoundCap
+            capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
             strokeWidth: 360 / Config.dashboard.visualiserBars - Appearance.spacing.small / 4
             strokeColor: Colours.palette.m3primary
 
@@ -124,8 +125,8 @@ Item {
         implicitWidth: Config.dashboard.sizes.mediaCoverArtSize
         implicitHeight: Config.dashboard.sizes.mediaCoverArtSize
 
-        color: Colours.palette.m3surfaceContainerHigh
-        radius: Appearance.rounding.full
+        color: Colours.tPalette.m3surfaceContainerHigh
+        radius: Infinity
 
         MaterialIcon {
             anchors.centerIn: parent
@@ -230,7 +231,7 @@ Item {
                 implicitWidth: Math.max(playIcon.implicitWidth, playIcon.implicitHeight) + padding * 2
                 implicitHeight: implicitWidth
 
-                radius: Players.active?.isPlaying ? Appearance.rounding.small : implicitHeight / 2
+                radius: Players.active?.isPlaying ? Appearance.rounding.small : implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
                 color: {
                     if (!Players.active?.canTogglePlaying)
                         return Qt.alpha(Colours.palette.m3onSurface, 0.1);
@@ -279,9 +280,10 @@ Item {
             }
         }
 
-        Slider {
+        StyledSlider {
             id: slider
 
+            enabled: !!Players.active
             implicitWidth: controls.implicitWidth * 1.5
             implicitHeight: Appearance.padding.normal * 3
 
@@ -290,56 +292,6 @@ Item {
                 const active = Players.active;
                 if (active?.canSeek && active?.positionSupported)
                     active.position = value * active.length;
-            }
-
-            background: Item {
-                StyledRect {
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.topMargin: slider.implicitHeight / 3
-                    anchors.bottomMargin: slider.implicitHeight / 3
-
-                    implicitWidth: slider.handle.x - slider.implicitHeight / 6
-
-                    color: Colours.palette.m3primary
-                    radius: Appearance.rounding.full
-                    topRightRadius: slider.implicitHeight / 15
-                    bottomRightRadius: slider.implicitHeight / 15
-                }
-
-                StyledRect {
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-                    anchors.topMargin: slider.implicitHeight / 3
-                    anchors.bottomMargin: slider.implicitHeight / 3
-
-                    implicitWidth: parent.width - slider.handle.x - slider.handle.implicitWidth - slider.implicitHeight / 6
-
-                    color: Colours.palette.m3surfaceContainer
-                    radius: Appearance.rounding.full
-                    topLeftRadius: slider.implicitHeight / 15
-                    bottomLeftRadius: slider.implicitHeight / 15
-                }
-            }
-
-            handle: StyledRect {
-                id: rect
-
-                x: slider.visualPosition * slider.availableWidth
-
-                implicitWidth: slider.implicitHeight / 4.5
-                implicitHeight: slider.implicitHeight
-
-                color: Colours.palette.m3primary
-                radius: Appearance.rounding.full
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onPressed: event => event.accepted = false
-                }
             }
         }
 
@@ -378,7 +330,7 @@ Item {
                 fontSize: Appearance.font.size.larger
                 padding: Appearance.padding.small
                 fill: false
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
 
                 function onClicked(): void {
                     Players.active?.raise();
@@ -396,7 +348,7 @@ Item {
                 implicitWidth: slider.implicitWidth * 0.6
                 implicitHeight: currentPlayer.implicitHeight + Appearance.padding.smaller * 2
                 radius: Appearance.rounding.normal
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
                 z: 1
 
                 StateLayer {
@@ -421,7 +373,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.maximumWidth: playerSelector.implicitWidth - implicitHeight - parent.spacing - Appearance.padding.normal * 2
                         text: Players.active?.identity ?? "No players"
-                        color: Colours.palette.m3onSecondaryContainer
+                        color: Players.active ? Colours.palette.m3onSurface : Colours.palette.m3onSurfaceVariant
                         elide: Text.ElideRight
                     }
                 }
@@ -528,7 +480,7 @@ Item {
                 fontSize: Appearance.font.size.larger
                 padding: Appearance.padding.small
                 fill: false
-                color: Colours.palette.m3surfaceContainer
+                color: Colours.tPalette.m3surfaceContainer
 
                 function onClicked(): void {
                     Players.active?.quit();

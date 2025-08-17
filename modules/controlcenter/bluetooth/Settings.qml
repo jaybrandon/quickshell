@@ -48,7 +48,7 @@ ColumnLayout {
         implicitHeight: adapterStatus.implicitHeight + Appearance.padding.large * 2
 
         radius: Appearance.rounding.normal
-        color: Colours.palette.m3surfaceContainer
+        color: Colours.tPalette.m3surfaceContainer
 
         ColumnLayout {
             id: adapterStatus
@@ -109,7 +109,7 @@ ColumnLayout {
         implicitHeight: adapterSettings.implicitHeight + Appearance.padding.large * 2
 
         radius: Appearance.rounding.normal
-        color: Colours.palette.m3surfaceContainer
+        color: Colours.tPalette.m3surfaceContainer
 
         ColumnLayout {
             id: adapterSettings
@@ -425,8 +425,8 @@ ColumnLayout {
                     implicitWidth: implicitHeight
                     implicitHeight: editIcon.implicitHeight + Appearance.padding.smaller * 2
 
-                    radius: root.session.bt.editingAdapterName ? Appearance.rounding.small : implicitHeight / 2
-                    color: root.session.bt.editingAdapterName ? Colours.palette.m3primary : "transparent"
+                    radius: root.session.bt.editingAdapterName ? Appearance.rounding.small : implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
+                    color: Qt.alpha(Colours.palette.m3primary, root.session.bt.editingAdapterName ? 1 : 0)
 
                     StateLayer {
                         color: root.session.bt.editingAdapterName ? Colours.palette.m3onPrimary : Colours.palette.m3onSurface
@@ -474,7 +474,7 @@ ColumnLayout {
         implicitHeight: adapterInfo.implicitHeight + Appearance.padding.large * 2
 
         radius: Appearance.rounding.normal
-        color: Colours.palette.m3surfaceContainer
+        color: Colours.tPalette.m3surfaceContainer
 
         ColumnLayout {
             id: adapterInfo
@@ -535,6 +535,8 @@ ColumnLayout {
 
         StyledSwitch {
             id: toggle
+
+            cLayer: 2
         }
     }
 

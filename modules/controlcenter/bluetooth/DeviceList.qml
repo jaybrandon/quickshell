@@ -17,8 +17,9 @@ ColumnLayout {
     id: root
 
     required property Session session
+    readonly property bool smallDiscoverable: width <= 540
+    readonly property bool smallPairable: width <= 480
 
-    anchors.fill: parent
     spacing: Appearance.spacing.small
 
     RowLayout {
@@ -48,8 +49,8 @@ ColumnLayout {
 
         ToggleButton {
             toggled: Bluetooth.defaultAdapter?.discoverable ?? false
-            icon: QsWindow.window.screen.height <= 1080 ? "group_search" : ""
-            label: QsWindow.window.screen.height <= 1080 ? "" : qsTr("Discoverable")
+            icon: root.smallDiscoverable ? "group_search" : ""
+            label: root.smallDiscoverable ? "" : qsTr("Discoverable")
 
             function onClicked(): void {
                 const adapter = Bluetooth.defaultAdapter;
@@ -61,7 +62,7 @@ ColumnLayout {
         ToggleButton {
             toggled: Bluetooth.defaultAdapter?.pairable ?? false
             icon: "missing_controller"
-            label: QsWindow.window.screen.height <= 960 ? "" : qsTr("Pairable")
+            label: root.smallPairable ? "" : qsTr("Pairable")
 
             function onClicked(): void {
                 const adapter = Bluetooth.defaultAdapter;
@@ -112,7 +113,7 @@ ColumnLayout {
             implicitWidth: implicitHeight
             implicitHeight: scanIcon.implicitHeight + Appearance.padding.normal * 2
 
-            radius: Bluetooth.defaultAdapter?.discovering ? Appearance.rounding.normal : implicitHeight / 2
+            radius: Bluetooth.defaultAdapter?.discovering ? Appearance.rounding.normal : implicitHeight / 2 * Math.min(1, Appearance.rounding.scale)
             color: Bluetooth.defaultAdapter?.discovering ? Colours.palette.m3secondary : Colours.palette.m3secondaryContainer
 
             StateLayer {
@@ -165,7 +166,7 @@ ColumnLayout {
             anchors.right: parent.right
             implicitHeight: deviceInner.implicitHeight + Appearance.padding.normal * 2
 
-            color: root.session.bt.active === modelData ? Colours.palette.m3surfaceContainer : "transparent"
+            color: Qt.alpha(Colours.tPalette.m3surfaceContainer, root.session.bt.active === modelData ? Colours.tPalette.m3surfaceContainer.a : 0)
             radius: Appearance.rounding.normal
 
             StateLayer {
@@ -189,7 +190,7 @@ ColumnLayout {
                     implicitHeight: icon.implicitHeight + Appearance.padding.normal * 2
 
                     radius: Appearance.rounding.normal
-                    color: device.connected ? Colours.palette.m3primaryContainer : device.modelData.bonded ? Colours.palette.m3secondaryContainer : Colours.palette.m3surfaceContainerHigh
+                    color: device.connected ? Colours.palette.m3primaryContainer : device.modelData.bonded ? Colours.palette.m3secondaryContainer : Colours.tPalette.m3surfaceContainerHigh
 
                     StyledRect {
                         anchors.fill: parent
@@ -236,23 +237,14 @@ ColumnLayout {
                     id: connectBtn
 
                     implicitWidth: implicitHeight
-                    implicitHeight: connectIcon.implicitHeight + Appearance.padding.small * 2
+                    implicitHeight: connectIcon.implicitHeight + Appearance.padding.smaller * 2
 
                     radius: Appearance.rounding.full
-                    color: device.connected ? Colours.palette.m3primaryContainer : "transparent"
+                    color: Qt.alpha(Colours.palette.m3primaryContainer, device.connected ? 1 : 0)
 
                     StyledBusyIndicator {
-                        anchors.centerIn: parent
-
-                        implicitWidth: implicitHeight
-                        implicitHeight: connectIcon.implicitHeight
-
-                        running: opacity > 0
-                        opacity: device.loading ? 1 : 0
-
-                        Behavior on opacity {
-                            Anim {}
-                        }
+                        anchors.fill: parent
+                        running: device.loading
                     }
 
                     StateLayer {
@@ -294,11 +286,11 @@ ColumnLayout {
         function onClicked(): void {
         }
 
-        Layout.preferredWidth: implicitWidth + (toggleStateLayer.pressed ? Appearance.padding.larger * 2 : toggled ? Appearance.padding.small * 2 : 0)
+        Layout.preferredWidth: implicitWidth + (toggleStateLayer.pressed ? Appearance.padding.normal * 2 : toggled ? Appearance.padding.small * 2 : 0)
         implicitWidth: toggleBtnInner.implicitWidth + Appearance.padding.large * 2
         implicitHeight: toggleBtnIcon.implicitHeight + Appearance.padding.normal * 2
 
-        radius: toggled || toggleStateLayer.pressed ? Appearance.rounding.small : Math.min(width, height) / 2
+        radius: toggled || toggleStateLayer.pressed ? Appearance.rounding.small : Math.min(width, height) / 2 * Math.min(1, Appearance.rounding.scale)
         color: toggled ? Colours.palette[`m3${accent.toLowerCase()}`] : Colours.palette[`m3${accent.toLowerCase()}Container`]
 
         StateLayer {
@@ -344,7 +336,10 @@ ColumnLayout {
         }
 
         Behavior on radius {
-            Anim {}
+            Anim {
+                duration: Appearance.anim.durations.expressiveFastSpatial
+                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+            }
         }
 
         Behavior on Layout.preferredWidth {

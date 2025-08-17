@@ -12,26 +12,53 @@ Item {
     id: root
 
     required property ShellScreen screen
+    readonly property int rounding: floating ? 0 : Appearance.rounding.normal
+
+    property alias floating: session.floating
     property alias active: session.active
+    property alias navExpanded: session.navExpanded
+
     readonly property Session session: Session {
         id: session
+
+        root: root
     }
 
-    implicitWidth: implicitHeight * Config.dcontent.sizes.ratio
-    implicitHeight: screen.height * Config.dcontent.sizes.heightMult
+    function close(): void {
+    }
 
-    RowLayout {
+    implicitWidth: implicitHeight * Config.controlCenter.sizes.ratio
+    implicitHeight: screen.height * Config.controlCenter.sizes.heightMult
+
+    GridLayout {
         anchors.fill: parent
 
-        spacing: 0
+        rowSpacing: 0
+        columnSpacing: 0
+        rows: root.floating ? 2 : 1
+        columns: 2
+
+        Loader {
+            Layout.fillWidth: true
+            Layout.columnSpan: 2
+
+            asynchronous: true
+            active: root.floating
+            visible: active
+
+            sourceComponent: WindowTitle {
+                screen: root.screen
+                session: root.session
+            }
+        }
 
         StyledRect {
             Layout.fillHeight: true
 
-            topLeftRadius: Appearance.rounding.normal
-            bottomLeftRadius: Appearance.rounding.normal
+            topLeftRadius: root.rounding
+            bottomLeftRadius: root.rounding
             implicitWidth: navRail.implicitWidth
-            color: Colours.palette.m3surfaceContainer
+            color: Colours.tPalette.m3surfaceContainer
 
             CustomMouseArea {
                 anchors.fill: parent
@@ -47,6 +74,7 @@ Item {
             NavRail {
                 id: navRail
 
+                screen: root.screen
                 session: root.session
             }
         }
@@ -55,6 +83,8 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
+            topRightRadius: root.rounding
+            bottomRightRadius: root.rounding
             session: root.session
         }
     }

@@ -14,7 +14,7 @@ StyledRect {
     implicitWidth: Sizes.sidebarWidth
     implicitHeight: inner.implicitHeight + Appearance.padding.normal * 2
 
-    color: Colours.palette.m3surfaceContainer
+    color: Colours.tPalette.m3surfaceContainer
 
     ColumnLayout {
         id: inner
@@ -48,7 +48,7 @@ StyledRect {
                 implicitHeight: placeInner.implicitHeight + Appearance.padding.normal * 2
 
                 radius: Appearance.rounding.full
-                color: selected ? Colours.palette.m3secondaryContainer : "transparent"
+                color: Qt.alpha(Colours.palette.m3secondaryContainer, selected ? 1 : 0)
 
                 StateLayer {
                     color: place.selected ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface

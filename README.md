@@ -51,7 +51,7 @@ Dependencies:
 -   `qt6-declarative`
 -   `gcc-libs`
 -   [`material-symbols`](https://fonts.google.com/icons)
--   [`jetbrains-mono-nerd`](https://www.nerdfonts.com/font-downloads)
+-   [`caskaydia-cove-nerd`](https://www.nerdfonts.com/font-downloads)
 -   [`grim`](https://gitlab.freedesktop.org/emersion/grim)
 -   [`swappy`](https://github.com/jtheoof/swappy)
 -   [`libqalculate`](https://github.com/Qalculate/libqalculate)
@@ -147,10 +147,46 @@ git pull
 
 All configuration options are in `~/.config/caelestia/shell.json`.
 
+> [!NOTE]
+> The example configuration only includes recommended configuration options. For more advanced customisation
+> such as modifying the size of individual items or changing constants in the code, there are some other
+> options which can be found in the source files in the `config` directory.
+
 <details><summary>Example configuration</summary>
 
 ```json
 {
+    "appearance": {
+        "anim": {
+            "durations": {
+                "scale": 1
+            }
+        },
+        "font": {
+            "family": {
+                "material": "Material Symbols Rounded",
+                "mono": "CaskaydiaCove NF",
+                "sans": "Rubik"
+            },
+            "size": {
+                "scale": 1
+            }
+        },
+        "padding": {
+            "scale": 1
+        },
+        "rounding": {
+        	"scale": 1
+        },
+        "spacing": {
+            "scale": 1
+        },
+        "transparency": {
+            "enabled": false,
+            "base": 0.85,
+            "layers": 0.4
+        }
+    },
     "general": {
         "apps": {
             "terminal": ["foot"],
@@ -158,10 +194,51 @@ All configuration options are in `~/.config/caelestia/shell.json`.
         }
     },
     "background": {
+        "desktopClock": {
+            "enabled": false
+        },
         "enabled": true
     },
     "bar": {
         "dragThreshold": 20,
+        "entries": [
+        	{
+   	            "id": "logo",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "workspaces",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "spacer",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "activeWindow",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "spacer",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "tray",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "clock",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "statusIcons",
+   	            "enabled": true
+   	        },
+   	        {
+   	            "id": "power",
+   	            "enabled": true
+   	        }
+        ],
         "persistent": true,
         "showOnHover": true,
         "status": {
@@ -171,14 +248,18 @@ All configuration options are in `~/.config/caelestia/shell.json`.
             "showKbLayout": false,
             "showNetwork": true
         },
+        "tray": {
+            "background": false,
+            "recolour": false
+        },
         "workspaces": {
             "activeIndicator": true,
-            "activeLabel": "󰮯 ",
+            "activeLabel": "󰮯",
             "activeTrail": false,
             "label": "  ",
             "occupiedBg": false,
-            "occupiedLabel": "󰮯 ",
-            "rounded": true,
+            "occupiedLabel": "󰮯",
+            "perMonitorWorkspaces": true,
             "showWindows": true,
             "shown": 5
         }
@@ -188,7 +269,10 @@ All configuration options are in `~/.config/caelestia/shell.json`.
         "thickness": 10
     },
     "dashboard": {
+        "enabled": true,
+        "dragThreshold": 50,
         "mediaUpdateInterval": 500,
+        "showOnHover": true,
         "visualiserBars": 45
     },
     "launcher": {
@@ -207,7 +291,7 @@ All configuration options are in `~/.config/caelestia/shell.json`.
         }
     },
     "lock": {
-        "maxNotifs": 5
+        "recolourLogo": false
     },
     "notifs": {
         "actionOnClick": false,
@@ -225,9 +309,11 @@ All configuration options are in `~/.config/caelestia/shell.json`.
         "wallpaperDir": "~/Pictures/Wallpapers"
     },
     "services": {
+        "audioIncrement": 0.1,
         "weatherLocation": "10,10",
         "useFahrenheit": false,
-        "useTwelveHourClock": false
+        "useTwelveHourClock": false,
+        "smartScheme": true
     },
     "session": {
         "dragThreshold": 30,
