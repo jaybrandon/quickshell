@@ -36,7 +36,6 @@ Column {
                 font.weight: 700
             }
 
-
             StateLayer {
                 id: previousMonthMouseArea
                 anchors.fill: parent
@@ -129,30 +128,31 @@ Column {
                 implicitHeight: parent.implicitHeight
 
                 radius: Appearance.rounding.full
-                color: Qt.alpha(Colours.palette.m3primary, day.model.today ? 1 : 0)
+                color: Qt.alpha(Colours.palette.m3primary, dayItem.model.today ? 1 : 0)
 
-            StyledText {
-                id: text
+                StyledText {
+                    id: text
 
-                anchors.centerIn: parent
+                    anchors.centerIn: parent
 
-                horizontalAlignment: Text.AlignHCenter
-                text: Qt.formatDate(dayItem.model.date, "d")
-                color: {
-                    var dayOfWeek = dayItem.model.date.getDay();
-                    if (dayItem.model.today) {
-                        return Colours.palette.m3onTertiary;
-                    } else if (dayOfWeek === 0 || dayOfWeek === 6) {
-                        return Colours.palette.m3tertiary;
-                    } else if (dayItem.model.month === grid.month) {
-                        return Colours.palette.m3onSurfaceVariant;
-                    } else {
-                        return Colours.palette.m3outline;
+                    horizontalAlignment: Text.AlignHCenter
+                    text: Qt.formatDate(dayItem.model.date, "d")
+                    color: {
+                        var dayOfWeek = dayItem.model.date.getDay();
+                        if (dayItem.model.today) {
+                            return Colours.palette.m3onPrimary;
+                        } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+                            return Colours.palette.m3tertiary;
+                        } else if (dayItem.model.month === grid.month) {
+                            return Colours.palette.m3onSurfaceVariant;
+                        } else {
+                            return Colours.palette.m3outline;
+                        }
                     }
+                    opacity: dayItem.model.month === grid.month ? 1.0 : 0.4
+                    font.pointSize: Appearance.font.size.normal
+                    font.weight: 500
                 }
-                opacity: dayItem.model.month === grid.month ? 1.0 : 0.4
-                font.pointSize: Appearance.font.size.normal
-                font.weight: 500
             }
         }
     }
