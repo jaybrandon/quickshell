@@ -1,92 +1,124 @@
+pragma ComponentBehavior: Bound
+
 import qs.components
 import qs.components.controls
 import qs.services
 import qs.config
-import QtQuick
 import Quickshell
+import Quickshell.Services.Pipewire
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
 
 Item {
     id: root
 
     required property var wrapper
 
-    implicitWidth: Math.max(volumeSlider.implicitWidth, pavuButton.implicitWidth) + rotatedText.width + Appearance.spacing.normal
-    implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight + Appearance.spacing.normal
+    implicitWidth: layout.implicitWidth + Appearance.padding.normal * 2
+    implicitHeight: layout.implicitHeight + Appearance.padding.normal * 2
 
-    VerticalSlider {
-        id: volumeSlider
-
-        anchors.left: parent.left
-
-        icon: {
-            if (Microphone.muted)
-                return "";
-            if (Microphone.volume > 0)
-                return "";
-            return "";
-        }
-        value: Microphone.volume
-        onMoved: Microphone.setVolume(value)
-
-        implicitWidth: Math.max(Config.osd.sizes.sliderWidth, pavuButton.implicitWidth)
-        implicitHeight: Config.osd.sizes.sliderHeight
+    ButtonGroup {
+        id: sinks
     }
 
-        StyledRect {
-        id: pavuButton
+    ButtonGroup {
+        id: sources
+    }
+
+    ColumnLayout {
+        id: layout
 
         anchors.left: parent.left
-        anchors.top: volumeSlider.bottom
-        anchors.topMargin: Appearance.spacing.normal
-        
-        implicitWidth: implicitHeight
-        implicitHeight: icon.implicitHeight + Appearance.padding.small * 2
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 0
 
-        radius: Appearance.rounding.normal
-        color: Colours.palette.m3surfaceContainer
+        Repeater {
+            model: Audio.sources
 
-        StateLayer {
-            function onClicked(): void {
-                root.wrapper.hasCurrent = false;
-                Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.microphone]);
+            StyledRadioButton {
+                required property PwNode modelData
+
+                ButtonGroup.group: sources
+                checked: Audio.source?.id === modelData.id
+                onClicked: Audio.setAudioSource(modelData)
+                text: modelData.description
             }
         }
-
-        MaterialIcon {
-            id: icon
-
-            anchors.centerIn: parent
-            text: "settings"
-        }
-    }
-    
-    Item {
-        id: rotatedText
-        implicitWidth: device.implicitHeight
-        implicitHeight: volumeSlider.implicitHeight + pavuButton.implicitHeight
-
-        anchors.left: volumeSlider.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Appearance.spacing.normal
 
         StyledText {
-            id: device
-            text: qsTr(Microphone.device)
-            elide: Text.ElideMiddle
-            wrapMode: Text.NoWrap
-            maximumLineCount: 2
-            horizontalAlignment: Text.AlignHCenter
+            Layout.topMargin: Appearance.spacing.normal
+            Layout.bottomMargin: Appearance.spacing.small / 2
+            text: qsTr("Volume (%1)").arg(Microphone.muted ? qsTr("Muted") : `${Math.round(Microphone.volume * 100)}%`)
+            font.weight: 500
+        }
 
-            width: parent.height
+        CustomMouseArea {
+            Layout.fillWidth: true
+            implicitHeight: Appearance.padding.normal * 3
 
-            anchors.centerIn: parent
+            onWheel: event => {
+                if (event.angleDelta.y > 0)
+                    Microphone.incrementVolume();
+                else if (event.angleDelta.y < 0)
+                    Microphone.decrementVolume();
+            }
 
-            transform: Rotation {
-                origin.x: device.width / 2
-                origin.y: device.height / 2
-                angle: 90
+            StyledSlider {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                implicitHeight: parent.implicitHeight
+
+                value: Microphone.volume
+                onMoved: Microphone.setVolume(value)
+
+                Behavior on value {
+                    NumberAnimation {
+                        duration: Appearance.anim.durations.normal
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.anim.curves.standard
+                    }
+                }
             }
         }
-    } 
-}
 
+        StyledRect {
+            Layout.topMargin: Appearance.spacing.normal
+            visible: Config.general.apps.audio.length > 0
+
+            implicitWidth: expandBtn.implicitWidth + Appearance.padding.normal * 2
+            implicitHeight: expandBtn.implicitHeight + Appearance.padding.small
+
+            radius: Appearance.rounding.normal
+            color: Colours.palette.m3primaryContainer
+
+            StateLayer {
+                color: Colours.palette.m3onPrimaryContainer
+
+                function onClicked(): void {
+                    root.wrapper.hasCurrent = false;
+                    Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.microphone]);
+                }
+            }
+
+            RowLayout {
+                id: expandBtn
+
+                anchors.centerIn: parent
+                spacing: Appearance.spacing.small
+
+                StyledText {
+                    Layout.leftMargin: Appearance.padding.smaller
+                    text: qsTr("Open settings")
+                    color: Colours.palette.m3onPrimaryContainer
+                }
+
+                MaterialIcon {
+                    text: "chevron_right"
+                    color: Colours.palette.m3onPrimaryContainer
+                    font.pointSize: Appearance.font.size.large
+                }
+            }
+        }
+    }
+}

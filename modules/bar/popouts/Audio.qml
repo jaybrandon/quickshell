@@ -33,12 +33,6 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 0
 
-        StyledText {
-            Layout.bottomMargin: Appearance.spacing.small / 2
-            text: qsTr("Output device")
-            font.weight: 500
-        }
-
         Repeater {
             model: Audio.sinks
 
@@ -50,26 +44,6 @@ Item {
                 ButtonGroup.group: sinks
                 checked: Audio.sink?.id === modelData.id
                 onClicked: Audio.setAudioSink(modelData)
-                text: modelData.description
-            }
-        }
-
-        StyledText {
-            Layout.topMargin: Appearance.spacing.normal
-            Layout.bottomMargin: Appearance.spacing.small / 2
-            text: qsTr("Input device")
-            font.weight: 500
-        }
-
-        Repeater {
-            model: Audio.sources
-
-            StyledRadioButton {
-                required property PwNode modelData
-
-                ButtonGroup.group: sources
-                checked: Audio.source?.id === modelData.id
-                onClicked: Audio.setAudioSource(modelData)
                 text: modelData.description
             }
         }

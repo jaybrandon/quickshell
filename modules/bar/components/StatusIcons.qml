@@ -9,37 +9,17 @@ import Quickshell.Bluetooth
 import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
 
 StyledRect {
     id: root
 
     property color colour: Colours.palette.m3secondary
+    readonly property alias items: iconColumn
 
-    readonly property list<var> hoverAreas: [
-        {
-            name: "audio",
-            item: audioIcon,
-            enabled: Config.bar.status.showAudio
-        },
-        {
-            name: "network",
-            item: networkIcon,
-            enabled: Config.bar.status.showNetwork
-        },
-        {
-            name: "bluetooth",
-            item: bluetoothGroup,
-            enabled: Config.bar.status.showBluetooth
-        },
-        {
-            name: "battery",
-            item: batteryIcon,
-            enabled: Config.bar.status.showBattery
-        }
-    ]
+    color: Colours.tPalette.m3surfaceContainer
+    radius: Appearance.rounding.full
 
-    clip: false
+    clip: true
     implicitWidth: Config.bar.sizes.innerWidth
     implicitHeight: iconColumn.implicitHeight + Appearance.padding.normal * 2
 
