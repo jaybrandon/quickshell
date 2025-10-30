@@ -70,6 +70,12 @@ Singleton {
         }
     }
 
+    function toggleSourceMute(): void {
+        if (source?.ready && source?.audio) {
+            source.audio.muted = !sourceMuted;
+        }
+    }
+
     function incrementSourceVolume(amount: real): void {
         setSourceVolume(sourceVolume + (amount || Config.services.audioIncrement));
     }

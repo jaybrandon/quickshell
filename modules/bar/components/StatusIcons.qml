@@ -135,11 +135,11 @@ StyledRect {
         // Microphone icon
         WrappedLoader {
             name: "microphone"
-            active: Config.bar.status.showMic
+            active: Config.bar.status.showMicrophone
 
             sourceComponent: MaterialIcon {
                 animate: true
-                text: Microphone.muted ? "" : Microphone.volume > 0 ? "" : ""
+                text: Audio.sourceMuted ? "" : Audio.sourceVolume > 0 ? "" : ""
                 color: root.colour
             }
 
@@ -156,20 +156,8 @@ StyledRect {
                 hoverEnabled: false
 
                 function onClicked(): void {
-                    Microphone.toggleMute();
+                    Audio.toggleSourceMute();
                 }
-            }
-        }
-
-        // Microphone icon
-        WrappedLoader {
-            name: "audio"
-            active: Config.bar.status.showMicrophone
-
-            sourceComponent: MaterialIcon {
-                animate: true
-                text: Icons.getMicVolumeIcon(Audio.sourceVolume, Audio.sourceMuted)
-                color: root.colour
             }
         }
 

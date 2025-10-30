@@ -8,6 +8,7 @@ JsonObject {
     component Apps: JsonObject {
         property list<string> terminal: ["foot"]
         property list<string> audio: ["pavucontrol"]
+        property list<string> microphone: ["pavucontrol"]
         property list<string> playback: ["mpv"]
         property list<string> explorer: ["thunar"]
     }

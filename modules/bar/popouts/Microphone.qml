@@ -31,7 +31,7 @@ Item {
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 0
+        spacing: Appearance.spacing.normal
 
         Repeater {
             model: Audio.sources
@@ -47,9 +47,9 @@ Item {
         }
 
         StyledText {
-            Layout.topMargin: Appearance.spacing.normal
-            Layout.bottomMargin: Appearance.spacing.small / 2
-            text: qsTr("Volume (%1)").arg(Microphone.muted ? qsTr("Muted") : `${Math.round(Microphone.volume * 100)}%`)
+            Layout.topMargin: Appearance.spacing.smaller
+            Layout.bottomMargin: -Appearance.spacing.small / 2
+            text: qsTr("Volume (%1)").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`)
             font.weight: 500
         }
 
@@ -59,9 +59,9 @@ Item {
 
             onWheel: event => {
                 if (event.angleDelta.y > 0)
-                    Microphone.incrementVolume();
+                    Audio.incrementSourceVolume();
                 else if (event.angleDelta.y < 0)
-                    Microphone.decrementVolume();
+                    Audio.decrementSourceVolume();
             }
 
             StyledSlider {
@@ -69,22 +69,18 @@ Item {
                 anchors.right: parent.right
                 implicitHeight: parent.implicitHeight
 
-                value: Microphone.volume
-                onMoved: Microphone.setVolume(value)
+                value: Audio.sourceVolume
+                onMoved: Audio.setSourceVolume(value)
 
                 Behavior on value {
-                    NumberAnimation {
-                        duration: Appearance.anim.durations.normal
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
-                    }
+                    Anim {}
                 }
             }
         }
 
         StyledRect {
             Layout.topMargin: Appearance.spacing.normal
-            visible: Config.general.apps.audio.length > 0
+            visible: Config.general.apps.microphone.length > 0
 
             implicitWidth: expandBtn.implicitWidth + Appearance.padding.normal * 2
             implicitHeight: expandBtn.implicitHeight + Appearance.padding.small
