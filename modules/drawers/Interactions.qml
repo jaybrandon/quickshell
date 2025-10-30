@@ -69,7 +69,7 @@ CustomMouseArea {
                 visibilities.utilities = false;
 
             if (!sessionBtnPressed)
-                visibilities.session = false;
+                //visibilities.session = false;
 
             if (!popouts.currentName.startsWith("traymenu"))
                 popouts.hasCurrent = false;
