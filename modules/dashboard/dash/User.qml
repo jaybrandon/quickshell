@@ -1,6 +1,7 @@
 import qs.components
 import qs.components.effects
 import qs.components.images
+import qs.components.filedialog
 import qs.services
 import qs.config
 import qs.utils
@@ -12,6 +13,7 @@ Row {
 
     required property PersistentProperties visibilities
     required property PersistentProperties state
+    required property FileDialog facePicker
 
     padding: Appearance.padding.large
     spacing: Appearance.spacing.normal
@@ -36,31 +38,22 @@ Row {
             id: pfp
 
             anchors.fill: parent
-            path: `${Paths.stringify(Paths.home)}/.face`
+            path: `${Paths.home}/.face`
         }
 
         MouseArea {
             anchors.fill: parent
-
-            cursorShape: Qt.PointingHandCursor
             hoverEnabled: true
-
-            onClicked: {
-                root.visibilities.launcher = false;
-                root.state.facePicker.open();
-            }
 
             StyledRect {
                 anchors.fill: parent
 
-                color: Qt.alpha(Colours.palette.m3primary, 0.1)
+                color: Qt.alpha(Colours.palette.m3scrim, 0.5)
                 opacity: parent.containsMouse ? 1 : 0
 
                 Behavior on opacity {
-                    NumberAnimation {
-                        duration: Appearance.anim.durations.normal
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
+                    Anim {
+                        duration: Appearance.anim.durations.expressiveFastSpatial
                     }
                 }
             }
@@ -76,6 +69,15 @@ Row {
                 scale: parent.containsMouse ? 1 : 0.5
                 opacity: parent.containsMouse ? 1 : 0
 
+                StateLayer {
+                    color: Colours.palette.m3onPrimary
+
+                    function onClicked(): void {
+                        root.visibilities.launcher = false;
+                        root.facePicker.open();
+                    }
+                }
+
                 MaterialIcon {
                     id: selectIcon
 
@@ -88,18 +90,15 @@ Row {
                 }
 
                 Behavior on scale {
-                    NumberAnimation {
+                    Anim {
                         duration: Appearance.anim.durations.expressiveFastSpatial
-                        easing.type: Easing.BezierSpline
                         easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
                     }
                 }
 
                 Behavior on opacity {
-                    NumberAnimation {
+                    Anim {
                         duration: Appearance.anim.durations.expressiveFastSpatial
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
                     }
                 }
             }

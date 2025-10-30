@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import qs.components
 import qs.config
 import "popouts" as BarPopouts
 import Quickshell
@@ -17,6 +18,10 @@ Item {
     readonly property int exclusiveZone: Config.bar.persistent || visibilities.bar ? contentWidth : Config.border.thickness
     readonly property bool shouldBeVisible: Config.bar.persistent || visibilities.bar || isHovered
     property bool isHovered
+
+    function closeTray(): void {
+        content.item?.closeTray();
+    }
 
     function checkPopout(y: real): void {
         content.item?.checkPopout(y);
@@ -43,11 +48,10 @@ Item {
             from: ""
             to: "visible"
 
-            NumberAnimation {
+            Anim {
                 target: root
                 property: "implicitWidth"
                 duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.type: Easing.BezierSpline
                 easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
             }
         },
@@ -55,11 +59,9 @@ Item {
             from: "visible"
             to: ""
 
-            NumberAnimation {
+            Anim {
                 target: root
                 property: "implicitWidth"
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
                 easing.bezierCurve: Appearance.anim.curves.emphasized
             }
         }

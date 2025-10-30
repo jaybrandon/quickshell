@@ -2,6 +2,7 @@ import qs.components
 import qs.services
 import qs.config
 import qs.utils
+import Caelestia.Services
 import QtQuick
 import QtQuick.Shapes
 
@@ -18,10 +19,8 @@ Item {
     implicitWidth: Config.dashboard.sizes.mediaWidth
 
     Behavior on playerProgress {
-        NumberAnimation {
+        Anim {
             duration: Appearance.anim.durations.large
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
         }
     }
 
@@ -31,6 +30,10 @@ Item {
         triggeredOnStart: true
         repeat: true
         onTriggered: Players.active?.positionChanged()
+    }
+
+    ServiceRef {
+        service: Audio.beatTracker
     }
 
     Shape {
@@ -52,11 +55,7 @@ Item {
             }
 
             Behavior on strokeColor {
-                ColorAnimation {
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
-                }
+                CAnim {}
             }
         }
 
@@ -76,11 +75,7 @@ Item {
             }
 
             Behavior on strokeColor {
-                ColorAnimation {
-                    duration: Appearance.anim.durations.normal
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.anim.curves.standard
-                }
+                CAnim {}
             }
         }
     }
@@ -218,8 +213,8 @@ Item {
         anchors.margins: Appearance.padding.large * 2
 
         playing: Players.active?.isPlaying ?? false
-        speed: BeatDetector.bpm / 300
-        source: Paths.expandTilde(Config.paths.mediaGif)
+        speed: Audio.beatTracker.bpm / 300
+        source: Paths.absolutePath(Config.paths.mediaGif)
         asynchronous: true
         fillMode: AnimatedImage.PreserveAspectFit
     }

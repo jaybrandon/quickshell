@@ -1,6 +1,7 @@
 pragma Singleton
 
 import qs.utils
+import Caelestia
 import Quickshell
 import Quickshell.Io
 
@@ -20,13 +21,36 @@ Singleton {
     property alias session: adapter.session
     property alias winfo: adapter.winfo
     property alias lock: adapter.lock
+    property alias utilities: adapter.utilities
+    property alias sidebar: adapter.sidebar
     property alias services: adapter.services
     property alias paths: adapter.paths
 
+    ElapsedTimer {
+        id: timer
+    }
+
     FileView {
-        path: `${Paths.stringify(Paths.config)}/shell.json`
+        path: `${Paths.config}/shell.json`
         watchChanges: true
-        onFileChanged: reload()
+        onFileChanged: {
+            timer.restart();
+            reload();
+        }
+        onLoaded: {
+            try {
+                JSON.parse(text());
+                if (adapter.utilities.toasts.configLoaded)
+                    Toaster.toast(qsTr("Config loaded"), qsTr("Config loaded in %1ms").arg(timer.elapsedMs()), "rule_settings");
+            } catch (e) {
+                Toaster.toast(qsTr("Failed to load config"), e.message, "settings_alert", Toast.Error);
+            }
+        }
+        onLoadFailed: err => {
+            if (err !== FileViewError.FileNotFound)
+                Toaster.toast(qsTr("Failed to read config file"), FileViewError.toString(err), "settings_alert", Toast.Warning);
+        }
+        onSaveFailed: err => Toaster.toast(qsTr("Failed to save config"), FileViewError.toString(err), "settings_alert", Toast.Error)
 
         JsonAdapter {
             id: adapter
@@ -44,6 +68,8 @@ Singleton {
             property SessionConfig session: SessionConfig {}
             property WInfoConfig winfo: WInfoConfig {}
             property LockConfig lock: LockConfig {}
+            property UtilitiesConfig utilities: UtilitiesConfig {}
+            property SidebarConfig sidebar: SidebarConfig {}
             property ServiceConfig services: ServiceConfig {}
             property UserPaths paths: UserPaths {}
         }

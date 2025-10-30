@@ -8,6 +8,7 @@ MouseArea {
     property bool disabled
     property color color: Colours.palette.m3onSurface
     property real radius: parent?.radius ?? 0
+    property alias rect: hoverLayer
 
     function onClicked(): void {
     }
@@ -60,16 +61,12 @@ MouseArea {
             properties: "implicitWidth,implicitHeight"
             from: 0
             to: rippleAnim.radius * 2
-            duration: Appearance.anim.durations.normal
             easing.bezierCurve: Appearance.anim.curves.standardDecel
         }
         Anim {
             target: ripple
             property: "opacity"
             to: 0
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
         }
     }
 
@@ -93,11 +90,5 @@ MouseArea {
                 y: -ripple.height / 2
             }
         }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

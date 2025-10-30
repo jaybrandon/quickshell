@@ -1,5 +1,6 @@
 pragma Singleton
 
+import qs.config
 import Quickshell
 import Quickshell.Services.Notifications
 
@@ -147,6 +148,7 @@ Singleton {
     }
 
     function getNotifIcon(summary: string, urgency: int): string {
+        summary = summary.toLowerCase();
         if (summary.includes("reboot"))
             return "restart_alt";
         if (summary.includes("recording"))
@@ -184,8 +186,21 @@ Singleton {
         return "volume_mute";
     }
 
+    function getMicVolumeIcon(volume: real, isMuted: bool): string {
+        if (!isMuted && volume > 0)
+            return "mic";
+        return "mic_off";
+    }
+
     function getSpecialWsIcon(name: string): string {
         name = name.toLowerCase().slice("special:".length);
+        
+        for (const iconConfig of Config.bar.workspaces.specialWorkspaceIcons) {
+            if (iconConfig.name === name) {
+                return iconConfig.icon;
+            }
+        }
+        
         if (name === "special")
             return "star";
         if (name === "communication")
@@ -197,5 +212,17 @@ Singleton {
         if (name === "sysmon")
             return "monitor_heart";
         return name[0].toUpperCase();
+    }
+
+    function getTrayIcon(id: string, icon: string): string {
+        for (const sub of Config.bar.tray.iconSubs)
+            if (sub.id === id)
+                return sub.image ? Qt.resolvedUrl(sub.image) : Quickshell.iconPath(sub.icon);
+
+        if (icon.includes("?path=")) {
+            const [name, path] = icon.split("?path=");
+            icon = Qt.resolvedUrl(`${path}/${name.slice(name.lastIndexOf("/") + 1)}`);
+        }
+        return icon;
     }
 }

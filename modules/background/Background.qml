@@ -1,4 +1,8 @@
+pragma ComponentBehavior: Bound
+
+import qs.components
 import qs.components.containers
+import qs.services
 import qs.config
 import Quickshell
 import Quickshell.Wayland
@@ -27,7 +31,15 @@ Loader {
             anchors.left: true
             anchors.right: true
 
-            Wallpaper {}
+            Wallpaper {
+                id: wallpaper
+            }
+
+            Visualiser {
+                anchors.fill: parent
+                screen: win.modelData
+                wallpaper: wallpaper
+            }
 
             Loader {
                 anchors.right: parent.right

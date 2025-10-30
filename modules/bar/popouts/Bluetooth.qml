@@ -110,7 +110,7 @@ ColumnLayout {
                 radius: Appearance.rounding.full
                 color: Qt.alpha(Colours.palette.m3primary, device.modelData.state === BluetoothDeviceState.Connected ? 1 : 0)
 
-                StyledBusyIndicator {
+                CircularIndicator {
                     anchors.fill: parent
                     running: device.loading
                 }
@@ -217,11 +217,5 @@ ColumnLayout {
         StyledSwitch {
             id: toggle
         }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

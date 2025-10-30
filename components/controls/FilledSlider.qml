@@ -3,13 +3,14 @@ import "../effects"
 import qs.services
 import qs.config
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Templates
 
 Slider {
     id: root
 
     required property string icon
     property real oldValue
+    property bool initialized
 
     orientation: Qt.Vertical
 
@@ -32,7 +33,7 @@ Slider {
     handle: Item {
         id: handle
 
-        property bool moving
+        property alias moving: icon.moving
 
         y: root.visualPosition * (root.availableHeight - height)
         implicitWidth: root.width
@@ -64,43 +65,49 @@ Slider {
             MaterialIcon {
                 id: icon
 
-                property bool moving: handle.moving
+                property bool moving
 
                 function update(): void {
                     animate = !moving;
-                    text = moving ? Qt.binding(() => Math.round(root.value * 100)) : Qt.binding(() => root.icon);
+                    binding.when = moving;
                     font.pointSize = moving ? Appearance.font.size.small : Appearance.font.size.larger;
                     font.family = moving ? Appearance.font.family.sans : Appearance.font.family.material;
                 }
 
-                animate: true
                 text: root.icon
                 color: Colours.palette.m3inverseOnSurface
                 anchors.centerIn: parent
 
-                Behavior on moving {
-                    SequentialAnimation {
-                        NumberAnimation {
-                            target: icon
-                            property: "scale"
-                            from: 1
-                            to: 0
-                            duration: Appearance.anim.durations.normal / 2
-                            easing.type: Easing.BezierSpline
-                            easing.bezierCurve: Appearance.anim.curves.standardAccel
-                        }
-                        ScriptAction {
-                            script: icon.update()
-                        }
-                        NumberAnimation {
-                            target: icon
-                            property: "scale"
-                            from: 0
-                            to: 1
-                            duration: Appearance.anim.durations.normal / 2
-                            easing.type: Easing.BezierSpline
-                            easing.bezierCurve: Appearance.anim.curves.standardDecel
-                        }
+                onMovingChanged: anim.restart()
+
+                Binding {
+                    id: binding
+
+                    target: icon
+                    property: "text"
+                    value: Math.round(root.value * 100)
+                    when: false
+                }
+
+                SequentialAnimation {
+                    id: anim
+
+                    Anim {
+                        target: icon
+                        property: "scale"
+                        to: 0
+                        duration: Appearance.anim.durations.normal / 2
+                        easing.bezierCurve: Appearance.anim.curves.standardAccel
+                    }
+                    ScriptAction {
+                        script: icon.update()
+                    }
+                    Anim {
+                        target: icon
+                        property: "scale"
+                        to: 1
+                        duration: Appearance.anim.durations.normal / 2
+                        easing.bezierCurve: Appearance.anim.curves.standardDecel
                     }
                 }
             }
@@ -110,6 +117,10 @@ Slider {
     onPressedChanged: handle.moving = pressed
 
     onValueChanged: {
+        if (!initialized) {
+            initialized = true;
+            return;
+        }
         if (Math.abs(value - oldValue) < 0.01)
             return;
         oldValue = value;
@@ -128,10 +139,8 @@ Slider {
     }
 
     Behavior on value {
-        NumberAnimation {
+        Anim {
             duration: Appearance.anim.durations.large
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.anim.curves.standard
         }
     }
 }

@@ -11,7 +11,6 @@ import Quickshell
 import Quickshell.Bluetooth
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 
 ColumnLayout {
     id: root
@@ -143,8 +142,11 @@ ColumnLayout {
     }
 
     StyledListView {
+        id: view
+
         model: ScriptModel {
             id: deviceModel
+
             values: [...Bluetooth.devices.values].sort((a, b) => (b.connected - a.connected) || (b.paired - a.paired))
         }
 
@@ -153,7 +155,9 @@ ColumnLayout {
         clip: true
         spacing: Appearance.spacing.small / 2
 
-        ScrollBar.vertical: StyledScrollBar {}
+        StyledScrollBar.vertical: StyledScrollBar {
+            flickable: view
+        }
 
         delegate: StyledRect {
             id: device
@@ -242,7 +246,7 @@ ColumnLayout {
                     radius: Appearance.rounding.full
                     color: Qt.alpha(Colours.palette.m3primaryContainer, device.connected ? 1 : 0)
 
-                    StyledBusyIndicator {
+                    CircularIndicator {
                         anchors.fill: parent
                         running: device.loading
                     }
@@ -348,11 +352,5 @@ ColumnLayout {
                 easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
             }
         }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

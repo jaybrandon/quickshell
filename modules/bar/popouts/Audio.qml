@@ -31,7 +31,12 @@ Item {
 
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 0
+        spacing: Appearance.spacing.normal
+
+        StyledText {
+            text: qsTr("Output device")
+            font.weight: 500
+        }
 
         Repeater {
             model: Audio.sinks
@@ -49,8 +54,27 @@ Item {
         }
 
         StyledText {
-            Layout.topMargin: Appearance.spacing.normal
-            Layout.bottomMargin: Appearance.spacing.small / 2
+            Layout.topMargin: Appearance.spacing.smaller
+            text: qsTr("Input device")
+            font.weight: 500
+        }
+
+        Repeater {
+            model: Audio.sources
+
+            StyledRadioButton {
+                required property PwNode modelData
+
+                ButtonGroup.group: sources
+                checked: Audio.source?.id === modelData.id
+                onClicked: Audio.setAudioSource(modelData)
+                text: modelData.description
+            }
+        }
+
+        StyledText {
+            Layout.topMargin: Appearance.spacing.smaller
+            Layout.bottomMargin: -Appearance.spacing.small / 2
             text: qsTr("Volume (%1)").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
             font.weight: 500
         }
@@ -75,11 +99,7 @@ Item {
                 onMoved: Audio.setVolume(value)
 
                 Behavior on value {
-                    NumberAnimation {
-                        duration: Appearance.anim.durations.normal
-                        easing.type: Easing.BezierSpline
-                        easing.bezierCurve: Appearance.anim.curves.standard
-                    }
+                    Anim {}
                 }
             }
         }

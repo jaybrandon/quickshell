@@ -26,19 +26,16 @@ StyledRect {
     implicitHeight: inner.implicitHeight
 
     x: Config.notifs.sizes.width
-    Component.onCompleted: x = 0
+    Component.onCompleted: {
+        x = 0;
+        modelData.lock(this);
+    }
+    Component.onDestruction: modelData.unlock(this)
 
     Behavior on x {
-        NumberAnimation {
-            duration: Appearance.anim.durations.normal
-            easing.type: Easing.BezierSpline
+        Anim {
             easing.bezierCurve: Appearance.anim.curves.emphasizedDecel
         }
-    }
-
-    RetainableLock {
-        object: root.modelData.notification
-        locked: true
     }
 
     MouseArea {
@@ -63,7 +60,7 @@ StyledRect {
             root.modelData.timer.stop();
             startY = event.y;
             if (event.button === Qt.MiddleButton)
-                root.modelData.notification.dismiss();
+                root.modelData.close();
         }
         onReleased: event => {
             if (!containsMouse)
@@ -72,7 +69,7 @@ StyledRect {
             if (Math.abs(root.x) < Config.notifs.sizes.width * Config.notifs.clearThreshold)
                 root.x = 0;
             else
-                root.modelData.notification.dismiss(); // TODO: change back to popup when notif dock impled
+                root.modelData.popup = false;
         }
         onPositionChanged: event => {
             if (pressed) {
@@ -178,7 +175,7 @@ StyledRect {
                         anchors.verticalCenterOffset: Appearance.font.size.large * 0.02
 
                         sourceComponent: MaterialIcon {
-                            text: Icons.getNotifIcon(root.modelData.summary.toLowerCase(), root.modelData.urgency)
+                            text: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
 
                             color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onSecondaryContainer
                             font.pointSize: Appearance.font.size.large
@@ -395,7 +392,7 @@ StyledRect {
                         return;
 
                     Quickshell.execDetached(["app2unit", "-O", "--", link]);
-                    root.modelData.notification.dismiss(); // TODO: change back to popup when notif dock impled
+                    root.modelData.popup = false;
                 }
 
                 opacity: root.expanded ? 1 : 0
@@ -424,7 +421,7 @@ StyledRect {
                     modelData: QtObject {
                         readonly property string text: qsTr("Close")
                         function invoke(): void {
-                            root.modelData.notification.dismiss();
+                            root.modelData.close();
                         }
                     }
                 }
@@ -483,11 +480,5 @@ StyledRect {
                 return (inner.width - actions.spacing * (numActions - 1)) / numActions - Appearance.padding.normal * 2;
             }
         }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }

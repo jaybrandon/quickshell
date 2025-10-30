@@ -1,29 +1,45 @@
 pragma ComponentBehavior: Bound
 
 import "items"
+import qs.components.controls
 import qs.services
 import qs.config
 import Quickshell
 import QtQuick
-import QtQuick.Controls
 
 PathView {
     id: root
 
-    required property TextField search
-    required property PersistentProperties visibilities
-    readonly property int numItems: {
-        const screenWidth = QsWindow.window?.screen.width * 0.8;
-        if (!screenWidth)
-            return 0;
-        const itemWidth = Config.launcher.sizes.wallpaperWidth * 0.8;
-        const max = Config.launcher.maxWallpapers;
-        const maxItemsOnScreen = Math.floor(screenWidth / itemWidth);
+    required property StyledTextField search
+    required property var visibilities
+    required property var panels
+    required property var content
 
-        const visible = Math.min(maxItemsOnScreen, max, scriptModel.values.length);
+    readonly property int itemWidth: Config.launcher.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2
+
+    readonly property int numItems: {
+        const screen = QsWindow.window?.screen;
+        if (!screen)
+            return 0;
+
+        // Screen width - 4x outer rounding - 2x max side thickness (cause centered)
+        const barMargins = Math.max(Config.border.thickness, panels.bar.implicitWidth);
+        let outerMargins = 0;
+        if (panels.popouts.hasCurrent && panels.popouts.currentCenter + panels.popouts.nonAnimHeight / 2 > screen.height - content.implicitHeight - Config.border.thickness * 2)
+            outerMargins = panels.popouts.nonAnimWidth;
+        if ((visibilities.utilities || visibilities.sidebar) && panels.utilities.implicitWidth > outerMargins)
+            outerMargins = panels.utilities.implicitWidth;
+        const maxWidth = screen.width - Config.border.rounding * 4 - (barMargins + outerMargins) * 2;
+
+        if (maxWidth <= 0)
+            return 0;
+
+        const maxItemsOnScreen = Math.floor(maxWidth / itemWidth);
+        const visible = Math.min(maxItemsOnScreen, Config.launcher.maxWallpapers, scriptModel.values.length);
+
         if (visible === 2)
             return 1;
-        else if (visible > 1 && visible % 2 === 0)
+        if (visible > 1 && visible % 2 === 0)
             return visible - 1;
         return visible;
     }
@@ -45,7 +61,7 @@ PathView {
             Wallpapers.preview(currentItem.modelData.path);
     }
 
-    implicitWidth: Math.min(numItems, count) * (Config.launcher.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2)
+    implicitWidth: Math.min(numItems, count) * itemWidth
     pathItemCount: numItems
     cacheItemCount: 4
 

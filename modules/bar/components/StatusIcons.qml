@@ -21,13 +21,87 @@ StyledRect {
 
     clip: true
     implicitWidth: Config.bar.sizes.innerWidth
-    implicitHeight: iconColumn.implicitHeight + Appearance.padding.normal * 2
+    implicitHeight: iconColumn.implicitHeight + Appearance.padding.normal * 2 - (Config.bar.status.showLockStatus && !Hypr.capsLock && !Hypr.numLock ? iconColumn.spacing : 0)
 
     ColumnLayout {
         id: iconColumn
 
-        anchors.centerIn: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Appearance.padding.normal
+
         spacing: Appearance.spacing.smaller / 2
+
+        // Lock keys status
+        WrappedLoader {
+            name: "lockstatus"
+            active: Config.bar.status.showLockStatus
+
+            sourceComponent: ColumnLayout {
+                spacing: 0
+
+                Item {
+                    implicitWidth: capslockIcon.implicitWidth
+                    implicitHeight: Hypr.capsLock ? capslockIcon.implicitHeight : 0
+
+                    MaterialIcon {
+                        id: capslockIcon
+
+                        anchors.centerIn: parent
+
+                        scale: Hypr.capsLock ? 1 : 0.5
+                        opacity: Hypr.capsLock ? 1 : 0
+
+                        text: "keyboard_capslock_badge"
+                        color: root.colour
+
+                        Behavior on opacity {
+                            Anim {}
+                        }
+
+                        Behavior on scale {
+                            Anim {}
+                        }
+                    }
+
+                    Behavior on implicitHeight {
+                        Anim {}
+                    }
+                }
+
+                Item {
+                    Layout.topMargin: Hypr.capsLock && Hypr.numLock ? iconColumn.spacing : 0
+
+                    implicitWidth: numlockIcon.implicitWidth
+                    implicitHeight: Hypr.numLock ? numlockIcon.implicitHeight : 0
+
+                    MaterialIcon {
+                        id: numlockIcon
+
+                        anchors.centerIn: parent
+
+                        scale: Hypr.numLock ? 1 : 0.5
+                        opacity: Hypr.numLock ? 1 : 0
+
+                        text: "looks_one"
+                        color: root.colour
+
+                        Behavior on opacity {
+                            Anim {}
+                        }
+
+                        Behavior on scale {
+                            Anim {}
+                        }
+                    }
+
+                    Behavior on implicitHeight {
+                        Anim {}
+                    }
+                }
+            }
+        }
 
         // Audio icon
         WrappedLoader {
@@ -87,16 +161,26 @@ StyledRect {
             }
         }
 
+        // Microphone icon
+        WrappedLoader {
+            name: "audio"
+            active: Config.bar.status.showMicrophone
+
+            sourceComponent: MaterialIcon {
+                animate: true
+                text: Icons.getMicVolumeIcon(Audio.sourceVolume, Audio.sourceMuted)
+                color: root.colour
+            }
+        }
+
         // Keyboard layout icon
-        Loader {
-            Layout.alignment: Qt.AlignHCenter
-            asynchronous: true
+        WrappedLoader {
+            name: "kblayout"
             active: Config.bar.status.showKbLayout
-            visible: active
 
             sourceComponent: StyledText {
                 animate: true
-                text: Hyprland.kbLayout
+                text: Hypr.kbLayout
                 color: root.colour
                 font.family: Appearance.font.family.mono
             }
@@ -116,6 +200,8 @@ StyledRect {
 
         // Bluetooth section
         WrappedLoader {
+            Layout.preferredHeight: implicitHeight
+
             name: "bluetooth"
             active: Config.bar.status.showBluetooth
 
@@ -147,28 +233,34 @@ StyledRect {
                         required property BluetoothDevice modelData
 
                         animate: true
-                        text: Icons.getBluetoothIcon(modelData.icon)
+                        text: Icons.getBluetoothIcon(modelData?.icon)
                         color: root.colour
                         fill: 1
 
                         SequentialAnimation on opacity {
-                            running: device.modelData.state !== BluetoothDeviceState.Connected
+                            running: device.modelData?.state !== BluetoothDeviceState.Connected
                             alwaysRunToEnd: true
                             loops: Animation.Infinite
 
                             Anim {
                                 from: 1
                                 to: 0
+                                duration: Appearance.anim.durations.large
                                 easing.bezierCurve: Appearance.anim.curves.standardAccel
                             }
                             Anim {
                                 from: 0
                                 to: 1
+                                duration: Appearance.anim.durations.large
                                 easing.bezierCurve: Appearance.anim.curves.standardDecel
                             }
                         }
                     }
                 }
+            }
+
+            Behavior on Layout.preferredHeight {
+                Anim {}
             }
         }
 
@@ -189,7 +281,7 @@ StyledRect {
                     }
 
                     const perc = UPower.displayDevice.percentage;
-                    const charging = !UPower.onBattery;
+                    const charging = [UPowerDeviceState.Charging, UPowerDeviceState.FullyCharged, UPowerDeviceState.PendingCharge].includes(UPower.displayDevice.state);
                     if (perc === 1)
                         return charging ? "battery_charging_full" : "battery_full";
                     let level = Math.floor(perc * 7);
@@ -203,21 +295,11 @@ StyledRect {
         }
     }
 
-    Behavior on implicitHeight {
-        Anim {}
-    }
-
     component WrappedLoader: Loader {
         required property string name
 
         Layout.alignment: Qt.AlignHCenter
         asynchronous: true
         visible: active
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.large
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.emphasized
     }
 }

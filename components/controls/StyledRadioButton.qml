@@ -2,12 +2,15 @@ import qs.components
 import qs.services
 import qs.config
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Templates
 
 RadioButton {
     id: root
 
     font.pointSize: Appearance.font.size.smaller
+
+    implicitWidth: implicitIndicatorWidth + implicitContentWidth + contentItem.anchors.leftMargin
+    implicitHeight: Math.max(implicitIndicatorHeight, implicitContentHeight)
 
     indicator: Rectangle {
         id: outerCircle
@@ -40,11 +43,7 @@ RadioButton {
         }
 
         Behavior on border.color {
-            ColorAnimation {
-                duration: Appearance.anim.durations.normal
-                easing.type: Easing.BezierSpline
-                easing.bezierCurve: Appearance.anim.curves.standard
-            }
+            CAnim {}
         }
     }
 

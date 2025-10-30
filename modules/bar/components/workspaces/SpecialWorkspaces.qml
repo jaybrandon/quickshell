@@ -14,15 +14,12 @@ Item {
     id: root
 
     required property ShellScreen screen
-    readonly property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-    readonly property string activeSpecial: (Config.bar.workspaces.perMonitorWorkspaces ? monitor : Hyprland.focusedMonitor)?.lastIpcObject.specialWorkspace.name ?? ""
+    readonly property HyprlandMonitor monitor: Hypr.monitorFor(screen)
+    readonly property string activeSpecial: (Config.bar.workspaces.perMonitorWorkspaces ? monitor : Hypr.focusedMonitor)?.lastIpcObject.specialWorkspace.name ?? ""
 
     layer.enabled: true
-    layer.effect: ShaderEffect {
-        required property Item source
-        readonly property Item maskSource: mask
-
-        fragmentShader: `file://${Quickshell.shellDir}/assets/shaders/opacitymask.frag.qsb`
+    layer.effect: OpacityMask {
+        maskSource: mask
     }
 
     Item {
@@ -98,7 +95,7 @@ Item {
         onCurrentIndexChanged: currentIndex = Qt.binding(() => model.values.findIndex(w => w.name === root.activeSpecial))
 
         model: ScriptModel {
-            values: Hyprland.workspaces.values.filter(w => w.name.startsWith("special:") && (!Config.bar.workspaces.perMonitorWorkspaces || w.monitor === root.monitor))
+            values: Hypr.workspaces.values.filter(w => w.name.startsWith("special:") && (!Config.bar.workspaces.perMonitorWorkspaces || w.monitor === root.monitor))
         }
 
         preferredHighlightBegin: 0
@@ -132,7 +129,7 @@ Item {
             Component.onCompleted: {
                 wsId = modelData.id;
                 icon = Icons.getSpecialWsIcon(modelData.name);
-                hasWindows = Config.bar.workspaces.showWindows && modelData.lastIpcObject.windows > 0;
+                hasWindows = Config.bar.workspaces.showWindowsOnSpecialWorkspaces && modelData.lastIpcObject.windows > 0;
             }
 
             // Hacky thing cause modelData gets destroyed before the remove anim finishes
@@ -151,16 +148,16 @@ Item {
 
                 function onLastIpcObjectChanged(): void {
                     if (ws.modelData)
-                        ws.hasWindows = Config.bar.workspaces.showWindows && ws.modelData.lastIpcObject.windows > 0;
+                        ws.hasWindows = Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
                 }
             }
 
             Connections {
                 target: Config.bar.workspaces
 
-                function onShowWindowsChanged(): void {
+                function onShowWindowsOnSpecialWorkspacesChanged(): void {
                     if (ws.modelData)
-                        ws.hasWindows = Config.bar.workspaces.showWindows && ws.modelData.lastIpcObject.windows > 0;
+                        ws.hasWindows = Config.bar.workspaces.showWindowsOnSpecialWorkspaces && ws.modelData.lastIpcObject.windows > 0;
                 }
             }
 
@@ -229,7 +226,7 @@ Item {
 
                     Repeater {
                         model: ScriptModel {
-                            values: Hyprland.toplevels.values.filter(c => c.workspace?.id === ws.wsId)
+                            values: Hypr.toplevels.values.filter(c => c.workspace?.id === ws.wsId)
                         }
 
                         MaterialIcon {
@@ -357,15 +354,9 @@ Item {
 
             const ws = view.itemAt(event.x, event.y);
             if (ws?.modelData)
-                Hyprland.dispatch(`togglespecialworkspace ${ws.modelData.name.slice(8)}`);
+                Hypr.dispatch(`togglespecialworkspace ${ws.modelData.name.slice(8)}`);
             else
-                Hyprland.dispatch("togglespecialworkspace special");
+                Hypr.dispatch("togglespecialworkspace special");
         }
-    }
-
-    component Anim: NumberAnimation {
-        duration: Appearance.anim.durations.normal
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.anim.curves.standard
     }
 }
