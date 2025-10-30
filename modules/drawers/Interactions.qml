@@ -114,14 +114,11 @@ CustomMouseArea {
                 root.panels.osd.hovered = true;
             }
 
-            const showSidebar = pressed && dragStart.x > bar.implicitWidth + panels.sidebar.x;
+            const showSidebar = pressed; //&& dragStart.x > bar.implicitWidth + panels.sidebar.x;
 
             // Show/hide session on drag
-            if (pressed && inRightPanel(panels.session, dragStart.x, dragStart.y) && withinPanelHeight(panels.session, x, y)) {
-                if (dragX < -Config.session.dragThreshold)
-                    visibilities.session = true;
-                else if (dragX > Config.session.dragThreshold)
-                    visibilities.session = false;
+            if (inRightPanel(panels.session, x, y) && withinPanelHeight(panels.session, x, y)) {
+                visibilities.session = true;
 
                 // Show sidebar on drag if in session area and session is nearly fully visible
                 if (showSidebar && panels.session.width >= panels.session.nonAnimWidth && dragX < -Config.sidebar.dragThreshold)
@@ -129,11 +126,14 @@ CustomMouseArea {
             } else if (showSidebar && dragX < -Config.sidebar.dragThreshold) {
                 // Show sidebar on drag if not in session area
                 visibilities.sidebar = true;
+                visibilities.session = false;
+            } else {
+                visibilities.session = false;
             }
         } else {
             const outOfSidebar = x < width - panels.sidebar.width;
             // Show osd on hover
-            const showOsd = outOfSidebar && inRightPanel(panels.osd, x, y);
+            const showOsd = false; //outOfSidebar && inRightPanel(panels.osd, x, y);
 
             // Always update visibility based on hover if not in shortcut mode
             if (!osdShortcutActive) {
